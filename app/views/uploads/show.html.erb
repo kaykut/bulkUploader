@@ -1,0 +1,45 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @upload.name %>
+</p>
+
+<p>
+  <b>Location:</b>
+  <%= @upload.location %>
+</p>
+
+<p>
+  <b>Datatype:</b>
+  <%= @upload.datatype %>
+</p>
+
+<p>
+  <b>Filename:</b>
+  <%= @upload.filename %>
+</p>
+
+<p>
+  <b>Imported:</b>
+  <%= @upload.imported %>
+</p>
+
+<p>
+  <b>Errors file:</b>
+  <%= @upload.errors_file %>
+</p>
+
+<p>
+  <b>Overwrite:</b>
+  <%= @upload.overwrite %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @upload.status %>
+</p>
+
+
+<%= link_to 'Edit', edit_upload_path(@upload) %> |
+<%= link_to 'Back', uploads_path %>

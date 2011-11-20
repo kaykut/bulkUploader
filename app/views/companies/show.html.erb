@@ -1,0 +1,51 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @company.name %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @company.company_type %>
+</p>
+
+<p>
+  <b>Address:</b>
+  <%= @company.address %>
+</p>
+
+<p>
+  <b>Email:</b>
+  <%= @company.email %>
+</p>
+
+<p>
+  <b>Faxphone:</b>
+  <%= @company.faxPhone %>
+</p>
+
+<p>
+  <b>Primaryphone:</b>
+  <%= @company.primaryPhone %>
+</p>
+
+<p>
+  <b>Externalid:</b>
+  <%= @company.externalId %>
+</p>
+
+<p>
+  <b>Comment:</b>
+  <%= @company.comment %>
+</p>
+
+<p>
+  <b>Enablesameadvertisercompetitiveexclusion:</b>
+  <%= @company.enableSameAdvertiserCompetitiveExclusion %>
+</p>
+
+
+<%= link_to 'Edit', edit_company_path(@company) %> |
+<%= link_to 'Back', companies_path %>
+

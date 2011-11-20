@@ -1,0 +1,54 @@
+<%= form_for(@company) do |f| %>
+  <% if @company.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@company.errors.count, "error") %> prohibited this company from being saved:</h2>
+
+      <ul>
+      <% @company.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :company_type %><br />
+    <%= f.text_field :company_type %>
+  </div>
+  <div class="field">
+    <%= f.label :address %><br />
+    <%= f.text_field :address %>
+  </div>
+  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.text_field :email %>
+  </div>
+  <div class="field">
+    <%= f.label :faxPhone %><br />
+    <%= f.text_field :faxPhone %>
+  </div>
+  <div class="field">
+    <%= f.label :primaryPhone %><br />
+    <%= f.text_field :primaryPhone %>
+  </div>
+  <div class="field">
+    <%= f.label :externalId %><br />
+    <%= f.text_field :externalId %>
+  </div>
+  <div class="field">
+    <%= f.label :comment %><br />
+    <%= f.text_area :comment %>
+  </div>
+  <div class="field">
+    <%= f.label :enableSameAdvertiserCompetitiveExclusion %><br />
+    <%= f.check_box :enableSameAdvertiserCompetitiveExclusion %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+

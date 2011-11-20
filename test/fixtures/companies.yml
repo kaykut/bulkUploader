@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  type: 
+  address: MyString
+  email: MyString
+  faxPhone: MyString
+  primaryPhone: MyString
+  externalId: MyString
+  comment: MyText
+  enableSameAdvertiserCompetitiveExclusion: false
+
+two:
+  name: MyString
+  type: 
+  address: MyString
+  email: MyString
+  faxPhone: MyString
+  primaryPhone: MyString
+  externalId: MyString
+  comment: MyText
+  enableSameAdvertiserCompetitiveExclusion: false
