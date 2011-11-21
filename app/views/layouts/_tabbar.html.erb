@@ -1,0 +1,24 @@
+<div>
+  <ul class="tabs">
+
+    <% if @current_controller == "uploads" %>
+      <li class='active'><%= link_to "Uploads", {:controller => 'uploads', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Uploads", {:controller => 'uploads', :action => 'index'} %></li>
+    <%end%>
+
+    <% if @current_controller == "labels" %>
+      <li class='active'><%= link_to "Labels", {:controller => 'labels', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Labels", {:controller => 'labels', :action => 'index'} %></li>
+    <%end%>
+
+    <% if @current_controller == "companies" %>
+      <li class='active'><%= link_to "Companies", {:controller => 'companiess', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
+    <%end%>
+
+  </ul>
+</div>
+

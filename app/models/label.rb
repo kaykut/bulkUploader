@@ -14,7 +14,7 @@ class Label < ActiveRecord::Base
 		params = {}
 		params[:name] = row[0]
 		params[:description] = row[1]
-		params[:label_type] = row[2]
+		params[:label_type] = row[2].sub(' ','')
     return params
 	end
 

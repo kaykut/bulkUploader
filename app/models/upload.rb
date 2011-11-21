@@ -51,6 +51,7 @@ class Upload < ActiveRecord::Base
   end
 
   def import
+
     self.status = 'Processing'
     self.save
 #initialize vars
@@ -66,12 +67,12 @@ class Upload < ActiveRecord::Base
       self.status = 'File not found'
       return
     end
-debugger
+
 #open output file for write
     CSV.open( csv_file_out, "wb" ) do |csv|
 #    csv_string = CSV.generate do |csv|
 
-debugger
+
 #      File.open( csv_file_in ).each do |csv_line_in| #read original file line-by-line
 			count = 0
 #        CSV.parse(csv_line_in ) do |row_in|
@@ -84,9 +85,10 @@ debugger
           end
 
           row_out = []
-debugger
+
           params = eval(data_class + '.row_to_params( row_in )')
           dummy_data = nil
+
           dummy_data = eval(data_class + '.new( params )')
           row_out = row_in #dump the original csv content into csv with errors
           exists = dummy_data.exists?
@@ -111,7 +113,8 @@ debugger
             csv_is_erroneous = true unless csv_is_erroneous
             row_out << ERROR_MARK_STRING
             dummy_data.errors.each do |attribute, error|
-              row_out << error
+              
+              row_out << attribute.to_s + ': ' + error.to_s
             end
             row_out << DATA_EXISTS_ERROR_MSG if exists
           end
@@ -120,7 +123,7 @@ debugger
         end           #end of CSV.parse(csv_line_in)
 #      end             #end of File.open(file_in)
     end               #end of erroneous CSV file write
-#debugger
+#
 
     self.delete_file('O') #REVISE - can depend on setting, we can charge for keeping files.
     if csv_is_erroneous

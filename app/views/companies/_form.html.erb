@@ -12,41 +12,49 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :name %><br />
+    <%= f.label :name %>
     <%= f.text_field :name %>
   </div>
   <div class="field">
-    <%= f.label :company_type %><br />
-    <%= f.text_field :company_type %>
+    <%= f.label :company_type %>
+    <%= select_tag 'company[company_type]',
+ 				   options_for_select( @company.company_types, @company.company_type ), 
+				   :include_blank => false %>
   </div>
   <div class="field">
-    <%= f.label :address %><br />
+    <%= f.label :address %>
     <%= f.text_field :address %>
   </div>
   <div class="field">
-    <%= f.label :email %><br />
+    <%= f.label :email %>
     <%= f.text_field :email %>
   </div>
   <div class="field">
-    <%= f.label :faxPhone %><br />
+    <%= f.label :faxPhone %>
     <%= f.text_field :faxPhone %>
   </div>
   <div class="field">
-    <%= f.label :primaryPhone %><br />
+    <%= f.label :primaryPhone %>
     <%= f.text_field :primaryPhone %>
   </div>
   <div class="field">
-    <%= f.label :externalId %><br />
+    <%= f.label :externalId %>
     <%= f.text_field :externalId %>
   </div>
   <div class="field">
-    <%= f.label :comment %><br />
-    <%= f.text_area :comment %>
+    <%= f.label 'Labels' %>
+    <%= f.text_field :label_list, :readonly => true %>
   </div>
   <div class="field">
-    <%= f.label :enableSameAdvertiserCompetitiveExclusion %><br />
+    <%= f.label 'Enable Same Advertiser Competitive Exclusion' %>
     <%= f.check_box :enableSameAdvertiserCompetitiveExclusion %>
   </div>
+	<br/><br/><br/>
+  <div class="field">
+    <%= f.label :comment %>
+    <%= f.text_area :comment %>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>

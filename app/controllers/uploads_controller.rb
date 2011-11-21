@@ -42,14 +42,18 @@ class UploadsController < ApplicationController
   # POST /uploads
   # POST /uploads.xml
   def create
+
     @upload = Upload.new(params[:upload])
 
     if @upload.filename.blank?
       redirect_to uploads_url, :flash => { :error => "There was a problem with the upload." }
     end
+
     @upload.save_temp
+
     @upload.import
 #    @upload.delay.import
+
     @upload.save
 
     respond_to do |format|

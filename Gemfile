@@ -27,7 +27,7 @@ gem 'jquery-rails'
 # Deploy with Capistrano
 # gem 'capistrano'
 
-# To use debugger
+# To use 
 gem 'ruby-debug19', :require => 'ruby-debug'
 
 group :test do
@@ -41,3 +41,4 @@ gem 'soap4r'
 gem 'google-dfp-api'
 gem 'execjs'
 gem 'therubyracer'
+gem 'google_client_login'

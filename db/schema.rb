@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111103133349) do
+ActiveRecord::Schema.define(:version => 20111121000408) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(:version => 20111103133349) do
     t.boolean  "enableSameAdvertiserCompetitiveExclusion"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "externalId"
   end
 
   create_table "companies_labels", :id => false, :force => true do |t|

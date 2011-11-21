@@ -58,6 +58,7 @@ GEM
     google-dfp-api (0.2.5)
       google-ads-common (~> 0.5.4)
       savon (= 0.9.6)
+    google_client_login (0.3.1)
     gyoku (0.4.4)
       builder (>= 2.1.2)
     hike (1.2.1)
@@ -168,6 +169,7 @@ DEPENDENCIES
   delayed_job
   execjs
   google-dfp-api
+  google_client_login
   jquery-rails
   rails (= 3.1.1)
   ruby-debug19
