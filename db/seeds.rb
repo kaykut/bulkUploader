@@ -5,7 +5,8 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-
+	require 'csv'
+	count = 0
 	CSV.foreach("seedData/Users.csv") do |row|
 
 		unless count == 0

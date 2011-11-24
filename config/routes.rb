@@ -1,4 +1,6 @@
 BulkUploader::Application.routes.draw do
+  resources :users
+
   resources :uploads
 
   resources :companies
