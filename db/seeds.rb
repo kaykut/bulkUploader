@@ -5,3 +5,18 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+	CSV.foreach("seedData/Users.csv") do |row|
+
+		unless count == 0
+			User.create(
+				:name => row[0],
+				:hashed_password => row[1],
+				:salt => row[2]
+
+			)
+		end
+
+		count = count + 1
+
+	end
