@@ -1,16 +1,14 @@
-<%= simple_form_for(@upload, :html => { :multipart => true }) do |f| %>
-  <%= f.error_notification %>
-
-  <div class="inputs">
-    <%= f.input :name, :input_html => { :class => 'field' } %>
-    <%= f.input :datatype, :collection => ['Labels', 'Companies'],  :input_html => { :class => 'field', :include_blank => false } %>
-    <label>File</label> 
+<%= twitter_bootstrap_form_for(@upload, :html => { :multipart => true }) do |f| %>
+	<%= f.inputs 'Upload', :class=> 'Upload' do %>
+    <%= f.text_field :name, :placeholder => 'Not necessarily the filename' %>
+    <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies'], :input_html => { :include_blank => false } %>
     <%= f.file_field :file, :input_html => { :class => 'input-file' } %>
-    <%= f.input :overwrite, :input_html => { :class => 'field' } %>
-  </div>
-
-  <div class="actions">
-    <%= f.button :submit, :class => 'btn primary' %>
-  </div>
+    <%= f.toggles do %>
+			<%= f.check_box :overwrite, 'Overwrite Local DB with file contents.' %>
+		<% end %>
+	<% end %>	 
+	<%= f.actions do %>
+    <%= f.submit 'Upload & Import to Local' %>
+	<% end %>
   
 <% end %>

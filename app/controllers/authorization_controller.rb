@@ -9,16 +9,14 @@
 class AuthorizationController < ApplicationController
 
   # just display the form and wait for user to
-  # enter a name and password
+  # enter a email and password
   
   def login
-    
     if request.post?
-      user = User.authenticate(params[:name], params[:password])
+      user = User.authenticate(params[:user][:email], params[:user][:password])
       if user
 #KAYA 06/05/2011 - data_owner_id for now in session. might be security risk, as data_owner_id is CRITICAL. look into it.
         session[:user_id] = user.id
-				session[:data_owner_id] = user.data_owner_id
         redirect_to(:controller => "uploads", :action => "index")
       else
         flash[:error] = "Invalid user/password combination"

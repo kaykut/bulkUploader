@@ -1,17 +1,10 @@
-<%= form_tag do %>
-  <fieldset>
-    <div>
-      <p>
-        <label for="Username">Username:</label>
-        <%= text_field_tag :name, params[:name] %>
-      </p>
-      <p>
-        <label for="password">Password:</label>
-        <%= password_field_tag :password, params[:password] %>
-      </p>
-      <p>
-        <%= submit_tag "Login", :class => 'btn primary' %>
-      </p>
-    </div>
-  </fieldset>
+<%= twitter_bootstrap_form_for :user do |f| %>
+	<%= f.inputs do %>
+		<%= f.text_field :email, :placeholder => 'me@example.com' %>
+	  <%= f.password_field :password, :size => 30 %>
+	<% end %>
+	<%= f.actions do%>
+  	<%= f.submit "Login", :class => 'btn primary' %>
+	<% end %>
 <% end %>
+<%= link_to 'Sign Up', :controller => 'users', :action => 'new' %>

@@ -7,17 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 	require 'csv'
 	count = 0
-	CSV.foreach("seedData/Users.csv") do |row|
-
-		unless count == 0
-			User.create(
-				:name => row[0],
-				:hashed_password => row[1],
-				:salt => row[2]
-
-			)
-		end
-
-		count = count + 1
-
-	end
+	du = User.new( :email => 'kaya',  :password => 'kaya' )
+  du.save(:validate => false)
+  du = du = User.new( :email => 'kaya+xfp@google.com',  :password => '1Felpudo,' )
+  du.save(:validate => false)	

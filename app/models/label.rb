@@ -1,11 +1,12 @@
 class Label < ActiveRecord::Base
+  LABEL_TYPES = ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP']
 	validates :name, :presence => true, :uniqueness => true, :length => {:maximum => 127 }
 	validate :label_type_value_is_permitted
 
 	has_and_belongs_to_many :companies
 
 	def label_type_value_is_permitted
-		unless ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP'].include?(label_type)
+		unless LABEL_TYPES.include?(label_type)
 			errors.add(:label_type, 'Value NOT permitted.')
 		end
 	end

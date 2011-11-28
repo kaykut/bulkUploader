@@ -81,9 +81,9 @@ These two books will bring you up to speed on the Ruby language and also on
 programming in general.
 
 
-== Debugger
+== 
 
-Debugger support is available through the  command when you start your
+ support is available through the  command when you start your
 Mongrel or WEBrick server with --. This means that you can break out of
 execution at any point in the code, investigate and change the model, and then,
 resume execution! You need to install ruby-debug to run the server in debugging

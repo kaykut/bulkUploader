@@ -1,62 +1,22 @@
-<%= form_for(@company) do |f| %>
-  <% if @company.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@company.errors.count, "error") %> prohibited this company from being saved:</h2>
-
-      <ul>
-      <% @company.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :name %>
+<%= twitter_bootstrap_form_for(@company) do |f| %>
+	<%= f.inputs do%>
     <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :company_type %>
-    <%= select_tag 'company[company_type]',
- 				   options_for_select( @company.company_types, @company.company_type ), 
-				   :include_blank => false %>
-  </div>
-  <div class="field">
-    <%= f.label :address %>
+    <%= f.select 'company_type', 'Company Type',
+							 @company.company_types,
+				   		 :input_html => { :include_blank => false } %>
     <%= f.text_field :address %>
-  </div>
-  <div class="field">
-    <%= f.label :email %>
     <%= f.text_field :email %>
-  </div>
-  <div class="field">
-    <%= f.label :faxPhone %>
     <%= f.text_field :faxPhone %>
-  </div>
-  <div class="field">
-    <%= f.label :primaryPhone %>
     <%= f.text_field :primaryPhone %>
-  </div>
-  <div class="field">
-    <%= f.label :externalId %>
     <%= f.text_field :externalId %>
-  </div>
-  <div class="field">
-    <%= f.label 'Labels' %>
     <%= f.text_field :label_list, :readonly => true %>
-  </div>
-  <div class="field">
-    <%= f.label 'Enable Same Advertiser Competitive Exclusion' %>
-    <%= f.check_box :enableSameAdvertiserCompetitiveExclusion %>
-  </div>
-	<br/><br/><br/>
-  <div class="field">
-    <%= f.label :comment %>
+		<% f.toggles do %>
+    	<%= f.check_box :enableSameAdvertiserCompetitiveExclusion %>
+		<% end %>
     <%= f.text_area :comment %>
-  </div>
-
-  <div class="actions">
+	<% end %>
+	<%= f.actions do %>
     <%= f.submit %>
-  </div>
+	<% end %>
 <% end %>
 

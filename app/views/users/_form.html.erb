@@ -1,29 +1,10 @@
-<%= form_for(@user) do |f| %>
-  <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-      <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :hashed_password %><br />
-    <%= f.text_field :hashed_password %>
-  </div>
-  <div class="field">
-    <%= f.label :salt %><br />
-    <%= f.text_field :salt %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+<%= twitter_bootstrap_form_for(@user) do |user| %>
+	<%= user.inputs 'Sign up', :class => 'sign_up' do %>
+		<%= user.text_field :email, :placeholder => 'me@example.com' %>
+	  <%= user.password_field :password, :size => 30 %>
+   	<%= user.password_field :password_confirmation, :size => 30 %>
+	<% end %>
+	<%= user.actions do %>
+	  <%= user.submit %>
+1	<% end %>
 <% end %>

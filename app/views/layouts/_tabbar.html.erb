@@ -14,10 +14,18 @@
     <%end%>
 
     <% if @current_controller == "companies" %>
-      <li class='active'><%= link_to "Companies", {:controller => 'companiess', :action => 'index'} %></li>
+      <li class='active'><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
     <%else%>
       <li><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
     <%end%>
+
+    <% if @current_controller == "users" %>
+      <li class='active'><%= link_to "Users", {:controller => 'users', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Users", {:controller => 'users', :action => 'index'} %></li>
+    <%end%>
+
+	  <li><%= link_to "Logout", {:controller => 'authorization', :action => 'logout'} %></li>
 
   </ul>
 </div>

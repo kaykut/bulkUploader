@@ -1,4 +1,7 @@
 class CompaniesController < ApplicationController
+  require 'dfp_api'
+  API_VERSION = 'v201108'
+  PAGE_SIZE = 9999
   # GET /companies
   # GET /companies.json
   def index
@@ -79,5 +82,38 @@ class CompaniesController < ApplicationController
       format.html { redirect_to companies_url }
       format.json { head :ok }
     end
+  end
+  
+  def fromsync
+    @user = User.find(session[:user_id])
+    dfp = DfpApi::Api.new({
+         :authentication => {
+         :method => 'ClientLogin',
+         :application_name => 'bulkUploader',
+         :email => @user.email,
+         :password => @user.password },
+       :service => { :environment => 'SANDBOX' } })
+       
+     # Get the CompanyService.
+     company_service = dfp.service(:CompanyService, API_VERSION)
+
+     # Define initial values.
+     page = {}
+     statement = {:query => "LIMIT %d" % [PAGE_SIZE]}
+     page = company_service.get_companies_by_statement(statement)
+
+
+debugger
+
+
+
+
+     # Print a footer.
+     if page.include?(:total_result_set_size)
+       puts "Total number of companies: %d" % page[:total_result_set_size]
+     end
+       
+       
+       
   end
 end

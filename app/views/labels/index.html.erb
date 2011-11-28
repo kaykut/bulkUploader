@@ -1,25 +1,26 @@
-<h1>Listing labels</h1>
-
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @labels.each do |label| %>
-  <tr>
-    <td><%= label.name %></td>
-    <td><%= label.description %></td>
-    <td><%= label.label_type %></td>
-    <td><%= link_to 'Show', label %></td>
-    <td><%= link_to 'Edit', edit_label_path(label) %></td>
-    <td><%= link_to 'Destroy', label, confirm: 'Are you sure?', method: :delete %></td>
-  </tr>
-<% end %>
+<table class="zebra-striped" class="bordered-table" class='condensed-table'>
+	<thead>
+	  <tr>
+	    <th>Name</th>
+	    <th>Description</th>
+	    <th>Type</th>
+	    <th></th>
+	    <th></th>
+	    <th></th>
+	  </tr>
+	</thead>
+	<tbody>
+		<% @labels.each do |label| %>
+		  <tr>
+		    <td><%= label.name %></td>
+		    <td><%= label.description %></td>
+		    <td><%= label.label_type %></td>
+		    <td><%= link_to 'Details', label %>
+		    		<%= link_to 'Edit', edit_label_path(label) %>
+		    		<%= link_to 'Destroy', label, confirm: 'Are you sure?', method: :delete %></td>
+		  </tr>
+		<% end %>
+	</tbody>
 </table>
 
 <br />

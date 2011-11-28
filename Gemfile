@@ -42,3 +42,8 @@ gem 'google-dfp-api'
 gem 'execjs'
 gem 'therubyracer'
 gem 'google_client_login'
+gem 'validates_email_format_of'
+gem 'twitter_bootstrap_form_for'
+gem 'jquery-rails'
+gem 'client_side_validations'
+	

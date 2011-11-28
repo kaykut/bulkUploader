@@ -58,10 +58,12 @@ class UploadsController < ApplicationController
 
     respond_to do |format|
       unless @upload.status == "Erroneous"
-        format.html { redirect_to(uploads_url, :notice => 'File uploaded successfully. Proceeding to import.') }
+        flash[:success] = 'File uploaded & imported successfully.'
+        format.html { redirect_to(uploads_url) }
         format.xml  { render :xml => @upload, :status => :created, :location => @upload }
       else
-        format.html { redirect_to(uploads_url, :notice => 'There were errors in the file - Import Unsuccesful.') }
+        flash[:error] = 'Import Unsuccesful. Download file to see errors.'
+        format.html { redirect_to(uploads_url) }
         format.xml  { render :xml => @upload, :status => :created, :location => @upload }
       end
     end

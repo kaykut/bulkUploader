@@ -7,8 +7,8 @@
       <legend>Please Log In</legend>
 
       <div>
-        <label for="Username">Username:</label>
-        <%= text_field_tag :name, params[:name] %>
+        <label for="Useremail">Useremail:</label>
+        <%= text_field_tag :email, params[:email] %>
       </div>
 
       <div>

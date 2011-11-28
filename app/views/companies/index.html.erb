@@ -1,40 +1,29 @@
-<h1>Listing companies</h1>
-
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Type</th>
-    <th>Address</th>
-    <th>Email</th>
-    <th>Faxphone</th>
-    <th>Primaryphone</th>
-    <th>Externalid</th>
-    <th>Comment</th>
-    <th>Enablesameadvertisercompetitiveexclusion</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @companies.each do |company| %>
-  <tr>
-    <td><%= company.name %></td>
-    <td><%= company.company_type %></td>
-    <td><%= company.address %></td>
-    <td><%= company.email %></td>
-    <td><%= company.faxPhone %></td>
-    <td><%= company.primaryPhone %></td>
-    <td><%= company.externalId %></td>
-    <td><%= company.comment %></td>
-    <td><%= company.enableSameAdvertiserCompetitiveExclusion %></td>
-    <td><%= link_to 'Show', company %></td>
-    <td><%= link_to 'Edit', edit_company_path(company) %></td>
-    <td><%= link_to 'Destroy', company, confirm: 'Are you sure?', method: :delete %></td>
-  </tr>
-<% end %>
+<table class="zebra-striped" class="bordered-table" class='condensed-table'>
+  <thead>
+		<tr>
+	    <th>Name</th>
+	    <th>Type</th>
+	    <th>Externalid</th>
+	    <th>Comment</th>
+	    <th></th>
+		</tr>
+  </thead>
+	<tbody>
+		<% @companies.each do |company| %>
+		  <tr>
+		    <td><%= company.name %></td>
+		    <td><%= company.company_type %></td>
+		    <td><%= company.externalId %></td>
+		    <td><%= company.comment %></td>
+		    <td><%= link_to 'Details', company %>
+		    		<%= link_to 'Edit', edit_company_path(company) %>
+		    		<%= link_to 'Destroy', company, confirm: 'Are you sure?', method: :delete %></td>
+		  </tr>
+		<% end %>
+	</tbody>
 </table>
 
 <br />
 
-<%= link_to 'New Company', new_company_path %>
-
+<%= link_to 'New Company', new_company_path %> <br/>
+<%= link_to 'Sync Companies from Server', :controller => 'companies', :action => 'fromsync' %>

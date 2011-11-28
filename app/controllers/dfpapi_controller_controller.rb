@@ -1,0 +1,2 @@
+class DfpapiControllerController < ApplicationController
+end
