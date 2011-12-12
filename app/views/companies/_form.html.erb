@@ -1,3 +1,13 @@
+<% if @company.errors.any? %>  <div id="error_explanation">
+   <div id="error_explanation">
+    <b><%= pluralize(@company.errors.count, "error") %> prohibited this client from being saved:<b>
+    <ul>
+    <% @company.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
 <%= twitter_bootstrap_form_for(@company) do |f| %>
 	<%= f.inputs do%>
     <%= f.text_field :name %>
@@ -6,12 +16,12 @@
 				   		 :input_html => { :include_blank => false } %>
     <%= f.text_field :address %>
     <%= f.text_field :email %>
-    <%= f.text_field :faxPhone %>
-    <%= f.text_field :primaryPhone %>
-    <%= f.text_field :externalId %>
-    <%= f.text_field :label_list, :readonly => true %>
+    <%= f.text_field :fax_phone %>
+    <%= f.text_field :primary_phone %>
+    <%= f.text_field :external_id %>
+    <%= f.text_field :label_list %>
 		<% f.toggles do %>
-    	<%= f.check_box :enableSameAdvertiserCompetitiveExclusion %>
+    	<%= f.check_box :enable_same_advertiser_competitive_exclusion %>
 		<% end %>
     <%= f.text_area :comment %>
 	<% end %>

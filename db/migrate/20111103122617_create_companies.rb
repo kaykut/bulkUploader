@@ -5,11 +5,11 @@ class CreateCompanies < ActiveRecord::Migration
       t.string :company_type
       t.text :address
       t.string :email
-      t.string :faxPhone
-      t.string :primaryPhone
-      t.string :DFPId
+      t.string :fax_phone
+      t.string :primary_phone
+      t.string :DFP_id
       t.text :comment
-      t.boolean :enableSameAdvertiserCompetitiveExclusion
+      t.boolean :enable_same_advertiser_competitive_exclusion
 
       t.timestamps
     end

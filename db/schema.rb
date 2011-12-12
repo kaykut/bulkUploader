@@ -11,21 +11,22 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111124101221) do
+ActiveRecord::Schema.define(:version => 20111212073753) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
     t.string   "company_type"
     t.text     "address"
     t.string   "email"
-    t.string   "faxPhone"
-    t.string   "primaryPhone"
-    t.string   "DFPId"
+    t.string   "fax_phone"
+    t.string   "primary_phone"
+    t.string   "DFP_id"
     t.text     "comment"
-    t.boolean  "enableSameAdvertiserCompetitiveExclusion"
+    t.boolean  "enable_same_advertiser_competitive_exclusion"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "externalId"
+    t.string   "external_id"
+    t.date     "synced_at"
   end
 
   create_table "companies_labels", :id => false, :force => true do |t|
@@ -40,6 +41,7 @@ ActiveRecord::Schema.define(:version => 20111124101221) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "DFPid"
+    t.date     "synced_at"
   end
 
   create_table "sessions", :force => true do |t|
@@ -68,6 +70,8 @@ ActiveRecord::Schema.define(:version => 20111124101221) do
   create_table "users", :force => true do |t|
     t.string   "email"
     t.string   "password"
+    t.integer  "network"
+    t.string   "environment"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

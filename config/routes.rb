@@ -1,9 +1,12 @@
 BulkUploader::Application.routes.draw do
   
-  resources :users
+  get 'users/login'
+  post 'users/login'
 
   resources :uploads
-  get 'companies/fromsync'
+  get 'companies/sync_from_dfp'
+  get 'companies/sync_to_dfp'
+  get 'companies/clear_imported'
 
   resources :companies
 
@@ -13,12 +16,9 @@ BulkUploader::Application.routes.draw do
     get 'download', :on => :member
   end
 
-  get "authorization/login"
-  post "authorization/login"
-  get "authorization/logout"
     # 
-    # post "companies/fromsync"
-    # get "companies/fromsync"
+    # post "companies/sync_from_dfp"
+    # get "companies/sync_from_dfp"
   
   root :to => 'uploads#index'
   # The priority is based upon order of creation:

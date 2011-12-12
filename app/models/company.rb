@@ -1,21 +1,47 @@
 class Company < ActiveRecord::Base
 	require 'csv'
+  
+  before_create :assign_synced_at
+	
+	attr_reader :label_list
 
 	validates :name, :presence => true, :length => { :maximum => 127 }, :uniqueness => { :case_sensitive => false }
 	validates :address, :length => { :maximum => 65535 }
 	validates :email, :length => { :maximum => 127 }
-	validates :faxPhone, :length => { :maximum => 63 }
-	validates :primaryPhone, :length => { :maximum => 63 }
-	validates :externalId, :length => { :maximum => 255 }
+	validates :fax_phone, :length => { :maximum => 63 } 
+	validates :primary_phone, :length => { :maximum => 63 }
+	validates :external_id, :length => { :maximum => 255 }
 	validates :comment, :length => { :maximum => 1024 }
-
-	validate :correct_email_format
+  validates_email_format_of :email, :allow_nil => true
 	validate :company_type_value_is_permitted
 	validate :labels_exist
 
 	has_and_belongs_to_many :labels
 
   COMPANY_TYPES = ['ADVERTISER','AGENCY','HOUSE_ADVERTISER','HOUSE_AGENCY','AD_NETWORK']
+
+  def self.params_dfp2bulk(params)
+    params[:company_type] = params[:type]
+    params.delete(:type)
+    params[:DFP_id] = params[:id]
+    params.delete(:id)
+    params.delete(:applied_labels)
+    return params
+  end
+  
+  def params_bulk2dfp
+    params = {}
+    params[:name] = self.name
+    params[:email] = self.email
+    params[:type] = self.company_type
+    params[:address] = self.address
+    params[:fax_phone] = self.fax_phone
+    params[:primary_phone] = self.primary_phone
+    params[:comment] = self.comment
+    params[:enable_same_advertiser_competitive_exclusion] = self.enable_same_advertiser_competitive_exclusion
+    params[:applied_labels] = []
+    return params
+  end
 
 	def self.row_to_params(row)
     return nil if row.blank?
@@ -26,11 +52,11 @@ class Company < ActiveRecord::Base
 		params[:company_type] = row[1]
 		params[:address] = row[2]
 		params[:email] = row[3]
-		params[:faxPhone] = row[4]
-		params[:primaryPhone] = row[5]
-		params[:externalId] = row[6]
+		params[:fax_phone] = row[4]
+		params[:primary_phone] = row[5]
+		params[:external_id] = row[6]
 		params[:comment] = row[7]
-		params[:enableSameAdvertiserCompetitiveExclusion] = row[8] || false
+		params[:enable_same_advertiser_competitive_exclusion] = row[8] || false
 		params[:labels] = []
 
     return params if row[9].blank?
@@ -40,7 +66,7 @@ class Company < ActiveRecord::Base
 		labels = CSV.parse(labels, :col_sep => '|')
 		labels[0].each do |l|
 			next if l.blank?
-			label = Label.find_by_name(l) || Label.new(:name => l, :label_type => 'DOES_NOT_EXIST_ERROR_INDICATOR')
+			label = Label.find_by_name(l) || Label.new(:name => l)
 			params[:labels] << label
 		end
 	  return params
@@ -53,17 +79,19 @@ class Company < ActiveRecord::Base
       return false
     end
   end
+  
+  def synced?
+    if self.DFP_id 
+      return 'YES'
+    else
+      return 'NO'
+    end
+  end
 
 #Validations
 	def company_type_value_is_permitted
 		unless COMPANY_TYPES.include?(company_type)
 			errors.add(:company_type, 'Value not permitted.')
-		end
-	end
-
-	def correct_email_format
-		unless email =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
-			errors.add(:email, 'Email format not correct.')
 		end
 	end
 	
@@ -76,9 +104,16 @@ class Company < ActiveRecord::Base
 	  return ll
 	end
 	
+	def label_list=(llist)
+	  return if llist.blank?
+    CSV.parse(llist)[0].each do |label_name|
+      self.labels << ( Label.find_by_name(label_name) || Label.new(:name => label_name) )
+    end
+  end
+	
 	def labels_exist
 	  self.labels.each do |l|
-      if l.label_type == 'DOES_NOT_EXIST_ERROR_INDICATOR'
+      if l.new_record?
         errors.add(:labels, l.name + ': label does not exist')
       elsif l.label_type != 'COMPETITIVE_EXCLUSION'
         errors.add(:labels, l.name + ': label type not compatible')
@@ -89,5 +124,10 @@ class Company < ActiveRecord::Base
 	def company_types
 	  return COMPANY_TYPES
   end
+  
+  def assign_synced_at
+    self.synced_at = Time.new('2000-01-01 00:00:00')
+  end
+  
 end
 

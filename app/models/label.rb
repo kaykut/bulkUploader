@@ -1,9 +1,12 @@
 class Label < ActiveRecord::Base
-  LABEL_TYPES = ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP']
+	before_create :assign_synced_at
+	
 	validates :name, :presence => true, :uniqueness => true, :length => {:maximum => 127 }
 	validate :label_type_value_is_permitted
 
 	has_and_belongs_to_many :companies
+
+  LABEL_TYPES = ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP']
 
 	def label_type_value_is_permitted
 		unless LABEL_TYPES.include?(label_type)
@@ -26,6 +29,15 @@ class Label < ActiveRecord::Base
       return false
     end
   end
+  
+  def label_types
+    return LABEL_TYPES
+  end
+  
+  def assign_synced_at
+    self.synced_at = Time.new('2000-01-01 00:00:00')
+  end
+  
 
 end
 

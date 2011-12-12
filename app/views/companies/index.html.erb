@@ -3,8 +3,7 @@
 		<tr>
 	    <th>Name</th>
 	    <th>Type</th>
-	    <th>Externalid</th>
-	    <th>Comment</th>
+	    <th>Synced?</th>
 	    <th></th>
 		</tr>
   </thead>
@@ -13,8 +12,7 @@
 		  <tr>
 		    <td><%= company.name %></td>
 		    <td><%= company.company_type %></td>
-		    <td><%= company.externalId %></td>
-		    <td><%= company.comment %></td>
+		    <td><%= company.synced? %></td>	
 		    <td><%= link_to 'Details', company %>
 		    		<%= link_to 'Edit', edit_company_path(company) %>
 		    		<%= link_to 'Destroy', company, confirm: 'Are you sure?', method: :delete %></td>
@@ -26,4 +24,6 @@
 <br />
 
 <%= link_to 'New Company', new_company_path %> <br/>
-<%= link_to 'Sync Companies from Server', :controller => 'companies', :action => 'fromsync' %>
+<%= link_to 'Sync Companies from Server', :controller => 'companies', :action => 'sync_from_dfp', :confirm => "All your local modifications over existing Companies will be overwritten. \n\n Are you sure?" %> <br/>
+<%= link_to 'Sync Companies to Server', :controller => 'companies', :action => 'sync_to_dfp' %> <br/>
+<%= link_to 'Delete all Companies in local', :controller => 'companies', :action => 'clear_imported' %>

@@ -1,0 +1,16 @@
+<%= twitter_bootstrap_form_for :user do |f| %>
+	<%= f.inputs do %>
+		<%= f.text_field :email, :size => 50, :placeholder => 'Your DFP API account email' %>
+	  <%= f.text_field :password, :size => 50, :placeholder => 'We do NOT encrypt or save your password.' %>
+		<%= f.text_field :network, :size => 10 %>
+    <%= f.select 'environment', 'Environment',
+							 ['SANDBOX', 'PRODUCTION'],
+				   		 :input_html => { :include_blank => false } %>
+	<% end %>
+	<%= f.actions do%>
+  	<%= f.submit "Submit Login Data", :class => 'btn primary' %>
+	<% end %>
+<% end %>
+
+<link rel="stylesheet/less" href="/path/to/bootstrap.less">
+<script src="/path/to/less.js"></script>

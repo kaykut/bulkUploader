@@ -22,17 +22,17 @@
 
 <p>
   <b>Faxphone:</b>
-  <%= @company.faxPhone %>
+  <%= @company.fax_phone %>
 </p>
 
 <p>
   <b>Primaryphone:</b>
-  <%= @company.primaryPhone %>
+  <%= @company.primary_phone %>
 </p>
 
 <p>
   <b>Externalid:</b>
-  <%= @company.externalId %>
+  <%= @company.external_id %>
 </p>
 
 <p>
@@ -42,8 +42,12 @@
 
 <p>
   <b>Enablesameadvertisercompetitiveexclusion:</b>
-  <%= @company.enableSameAdvertiserCompetitiveExclusion %>
+  <%= @company.enable_same_advertiser_competitive_exclusion %>
 </p>
+
+<p>
+	<b>Labels:</b>
+	<%= @company.label_list %>
 
 
 <%= link_to 'Edit', edit_company_path(@company) %> |

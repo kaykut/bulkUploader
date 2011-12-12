@@ -1,5 +1,5 @@
 class AddTernalIdColumnToCompanies < ActiveRecord::Migration
   def change
-    add_column :companies, :externalId, :string
+    add_column :companies, :external_id, :string
   end
 end

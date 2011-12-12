@@ -5,19 +5,19 @@ one:
   type: 
   address: MyString
   email: MyString
-  faxPhone: MyString
-  primaryPhone: MyString
-  externalId: MyString
+  fax_phone: MyString
+  primary_phone: MyString
+  external_id: MyString
   comment: MyText
-  enableSameAdvertiserCompetitiveExclusion: false
+  enable_same_advertiser_competitive_exclusion: false
 
 two:
   name: MyString
   type: 
   address: MyString
   email: MyString
-  faxPhone: MyString
-  primaryPhone: MyString
-  externalId: MyString
+  fax_phone: MyString
+  primary_phone: MyString
+  external_id: MyString
   comment: MyText
-  enableSameAdvertiserCompetitiveExclusion: false
+  enable_same_advertiser_competitive_exclusion: false
