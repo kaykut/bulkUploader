@@ -10,6 +10,9 @@ BulkUploader::Application.routes.draw do
 
   resources :companies
 
+  get 'labels/sync_from_dfp'
+  get 'labels/sync_to_dfp'
+  get 'labels/clear_all'
   resources :labels
 
   resources :uploads do
