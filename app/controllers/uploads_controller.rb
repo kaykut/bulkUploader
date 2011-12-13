@@ -76,7 +76,8 @@ class UploadsController < ApplicationController
 
     respond_to do |format|
       if @upload.update_attributes(params[:upload])
-        format.html { redirect_to(@upload, :notice => 'Upload was successfully updated.') }
+        flash[:success] = 'Upload was successfully updated.'
+        format.html { redirect_to(@upload) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

@@ -10,28 +10,29 @@
 </head>
 <body style='padding-top:50px'>
 	<div class='container'>
-		<% if flash[:success]%>
-		<div class="alert-message success">
+		<div id='header'>
+			<%= render '/layouts/tabbar' %>
+		<div>
+			
+		<% if not flash[:success].blank?%>
+			<div class="alert-message success">
 	    <a class="close" href="#">×</a>
 	    <p><%= flash[:success] %></p>
 	  </div>
 		<% end %>
-		<% if flash[:error]%>
-		<div class="alert-message error">
+		<% if not flash[:error].blank?%>
+			<div class="alert-message error">
 	    <a class="close" href="#">×</a>
 	    <p><%= flash[:error] %></p>
 	  </div>
 		<% end %>
-		<% if flash[:notice]%>
-		<div class="alert-message warning">
+		<% if not flash[:notice].blank?%>
+			<div class="alert-message warning">
 	    <a class="close" href="#">×</a>
 	    <p><%= flash[:notice] %></p>
 	  </div>
 		<% end %>
-		
-		<div id='header'>
-			<%= render '/layouts/tabbar' %>
-		<div>
+
 		<%= yield %>
 		
 	</div>

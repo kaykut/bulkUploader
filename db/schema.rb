@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(:version => 20111212073753) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "external_id"
-    t.date     "synced_at"
+    t.datetime "synced_at"
   end
 
   create_table "companies_labels", :id => false, :force => true do |t|
@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(:version => 20111212073753) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "DFPid"
-    t.date     "synced_at"
+    t.datetime "synced_at"
   end
 
   create_table "sessions", :force => true do |t|

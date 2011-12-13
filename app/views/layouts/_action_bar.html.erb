@@ -1,0 +1,8 @@
+<div>
+	<ul class="pills">
+		<li><%= link_to 'New Company', new_company_path %> </li>
+		<li><%= link_to 'Sync Companies from Server', :controller => 'companies', :action => 'sync_from_dfp', confirm: "All your local modifications over existing Companies will be overwritten. \n\n Are you sure?" %> </li>
+		<li><%= link_to 'Sync Companies to Server', :controller => 'companies', :action => 'sync_to_dfp' %> </li>
+		<li><%= link_to 'Delete all Companies in local', :controller => 'companies', :action => 'clear_all' %></li>
+	</ul>
+</div>

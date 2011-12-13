@@ -6,7 +6,7 @@ BulkUploader::Application.routes.draw do
   resources :uploads
   get 'companies/sync_from_dfp'
   get 'companies/sync_to_dfp'
-  get 'companies/clear_imported'
+  get 'companies/clear_all'
 
   resources :companies
 

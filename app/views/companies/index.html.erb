@@ -1,3 +1,4 @@
+<%= render 'layouts/action_bar'%>
 <table class="zebra-striped" class="bordered-table" class='condensed-table'>
   <thead>
 		<tr>
@@ -22,8 +23,3 @@
 </table>
 
 <br />
-
-<%= link_to 'New Company', new_company_path %> <br/>
-<%= link_to 'Sync Companies from Server', :controller => 'companies', :action => 'sync_from_dfp', :confirm => "All your local modifications over existing Companies will be overwritten. \n\n Are you sure?" %> <br/>
-<%= link_to 'Sync Companies to Server', :controller => 'companies', :action => 'sync_to_dfp' %> <br/>
-<%= link_to 'Delete all Companies in local', :controller => 'companies', :action => 'clear_imported' %>

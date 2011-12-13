@@ -1,13 +1,3 @@
-<% if @label.errors.any? %>  <div id="error_explanation">
-   <div id="error_explanation">
-    <b><%= pluralize(@label.errors.count, "error") %> prohibited this client from being saved:<b>
-    <ul>
-    <% @label.errors.full_messages.each do |msg| %>
-      <li><%= msg %></li>
-    <% end %>
-    </ul>
-  </div>
-<% end %>
 <%= twitter_bootstrap_form_for(@label) do |f| %>
 	<%=f.inputs 'Label', :class => 'Label' do %>
     <%= f.text_field :name %>

@@ -1,7 +1,5 @@
 class Company < ActiveRecord::Base
 	require 'csv'
-  
-  before_create :assign_synced_at
 	
 	attr_reader :label_list
 
@@ -12,7 +10,7 @@ class Company < ActiveRecord::Base
 	validates :primary_phone, :length => { :maximum => 63 }
 	validates :external_id, :length => { :maximum => 255 }
 	validates :comment, :length => { :maximum => 1024 }
-  validates_email_format_of :email, :allow_nil => true
+  validates_email_format_of :email, :allow_nil => true, :allow_blank => true
 	validate :company_type_value_is_permitted
 	validate :labels_exist
 
@@ -31,6 +29,7 @@ class Company < ActiveRecord::Base
   
   def params_bulk2dfp
     params = {}
+    params[:id] = self.DFP_id unless self.DFP_id.nil?
     params[:name] = self.name
     params[:email] = self.email
     params[:type] = self.company_type
@@ -88,12 +87,6 @@ class Company < ActiveRecord::Base
     end
   end
 
-#Validations
-	def company_type_value_is_permitted
-		unless COMPANY_TYPES.include?(company_type)
-			errors.add(:company_type, 'Value not permitted.')
-		end
-	end
 	
 	def label_list
 	  ll = ''
@@ -110,7 +103,21 @@ class Company < ActiveRecord::Base
       self.labels << ( Label.find_by_name(label_name) || Label.new(:name => label_name) )
     end
   end
-	
+		
+	def company_types
+	  return COMPANY_TYPES
+  end  
+  
+  
+  
+  
+  #Validations
+	def company_type_value_is_permitted
+		unless COMPANY_TYPES.include?(company_type)
+			errors.add(:company_type, 'Value not permitted.')
+		end
+	end
+
 	def labels_exist
 	  self.labels.each do |l|
       if l.new_record?
@@ -120,14 +127,6 @@ class Company < ActiveRecord::Base
       end
 	  end
 	end
-	
-	def company_types
-	  return COMPANY_TYPES
-  end
-  
-  def assign_synced_at
-    self.synced_at = Time.new('2000-01-01 00:00:00')
-  end
   
 end
 
