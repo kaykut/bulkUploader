@@ -1,5 +1,7 @@
 BulkUploader::Application.routes.draw do
   
+  resources :ad_units
+
   get 'users/login'
   post 'users/login'
 

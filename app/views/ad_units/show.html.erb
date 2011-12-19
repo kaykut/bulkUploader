@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Dfp:</b>
+  <%= @ad_unit.DFP_id %>
+</p>
+
+<p>
+  <b>Parent:</b>
+  <%= @ad_unit.parent_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @ad_unit.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @ad_unit.description %>
+</p>
+
+<p>
+  <b>Target window:</b>
+  <%= @ad_unit.target_window %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @ad_unit.status %>
+</p>
+
+<p>
+  <b>Explicitly targeted:</b>
+  <%= @ad_unit.explicitly_targeted %>
+</p>
+
+
+<%= link_to 'Edit', edit_ad_unit_path(@ad_unit) %> |
+<%= link_to 'Back', ad_units_path %>

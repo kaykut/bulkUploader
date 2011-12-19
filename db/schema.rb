@@ -11,7 +11,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111212073753) do
+ActiveRecord::Schema.define(:version => 20111214130427) do
+
+  create_table "ad_units", :force => true do |t|
+    t.string   "DFP_id"
+    t.string   "parent_id_dfp"
+    t.string   "parent_id_bulk"
+    t.string   "name"
+    t.string   "description"
+    t.string   "target_window"
+    t.boolean  "explicitly_targeted"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "companies", :force => true do |t|
     t.string   "name"

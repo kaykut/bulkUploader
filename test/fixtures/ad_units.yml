@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  DFP_id: MyString
+  parent_id: MyString
+  name: MyString
+  description: MyString
+  target_window: MyString
+  status: MyString
+  explicitly_targeted: false
+
+two:
+  DFP_id: MyString
+  parent_id: MyString
+  name: MyString
+  description: MyString
+  target_window: MyString
+  status: MyString
+  explicitly_targeted: false

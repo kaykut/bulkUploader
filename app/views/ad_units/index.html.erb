@@ -1,0 +1,35 @@
+<h1>Listing ad_units</h1>
+
+<table>
+  <tr>
+    <th>Dfp</th>
+    <th>Parent</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Target window</th>
+    <th>Status</th>
+    <th>Explicitly targeted</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @ad_units.each do |ad_unit| %>
+  <tr>
+    <td><%= ad_unit.DFP_id %></td>
+    <td><%= ad_unit.parent_id %></td>
+    <td><%= ad_unit.name %></td>
+    <td><%= ad_unit.description %></td>
+    <td><%= ad_unit.target_window %></td>
+    <td><%= ad_unit.status %></td>
+    <td><%= ad_unit.explicitly_targeted %></td>
+    <td><%= link_to 'Show', ad_unit %></td>
+    <td><%= link_to 'Edit', edit_ad_unit_path(ad_unit) %></td>
+    <td><%= link_to 'Destroy', ad_unit, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Ad unit', new_ad_unit_path %>
