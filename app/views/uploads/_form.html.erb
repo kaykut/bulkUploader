@@ -1,10 +1,11 @@
 <%= twitter_bootstrap_form_for(@upload, :html => { :multipart => true }) do |f| %>
 	<%= f.inputs 'Upload', :class=> 'Upload' do %>
     <%= f.text_field :name, :placeholder => 'Not necessarily the filename' %>
-    <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies'], :input_html => { :include_blank => false } %>
+    <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies', 'AdUnits'], :input_html => { :include_blank => false } %>
     <%= f.file_field :file, :input_html => { :class => 'input-file' } %>
     <%= f.toggles do %>
 			<%= f.check_box :overwrite, 'Overwrite Local DB with file contents.' %>
+			<%= f.check_box :has_header, 'The file has a header row.', :checked_value => true, :unchecked_value => false %>
 		<% end %>
 	<% end %>	 
 	<%= f.actions do %>

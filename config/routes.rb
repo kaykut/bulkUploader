@@ -1,15 +1,12 @@
 BulkUploader::Application.routes.draw do
   
-  resources :ad_units
-
   get 'users/login'
   post 'users/login'
-
-  resources :uploads
+  
+  
   get 'companies/sync_from_dfp'
   get 'companies/sync_to_dfp'
   get 'companies/clear_all'
-
   resources :companies
 
   get 'labels/sync_from_dfp'
@@ -17,9 +14,18 @@ BulkUploader::Application.routes.draw do
   get 'labels/clear_all'
   resources :labels
 
+  get 'ad_units/sync_from_dfp'
+  get 'ad_units/sync_to_dfp'
+  get 'ad_units/clear_all'
+  resources :ad_units
+
+  get 'uploads/clear_all'
   resources :uploads do
     get 'download', :on => :member
+#    get 'import', :on => :member
   end
+  resources :uploads
+  
 
     # 
     # post "companies/sync_from_dfp"

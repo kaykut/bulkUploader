@@ -11,16 +11,31 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111214130427) do
+ActiveRecord::Schema.define(:version => 20111221110544) do
+
+  create_table "ad_unit_sizes", :force => true do |t|
+    t.integer  "height"
+    t.integer  "width"
+    t.boolean  "is_aspect_ratio"
+    t.string   "environment_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "ad_unit_sizes_ad_units", :id => false, :force => true do |t|
+    t.integer "ad_unit_id"
+    t.integer "ad_unit_size_id"
+  end
 
   create_table "ad_units", :force => true do |t|
-    t.string   "DFP_id"
+    t.string   "dfp_id"
     t.string   "parent_id_dfp"
     t.string   "parent_id_bulk"
     t.string   "name"
     t.string   "description"
     t.string   "target_window"
     t.boolean  "explicitly_targeted"
+    t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -32,7 +47,7 @@ ActiveRecord::Schema.define(:version => 20111214130427) do
     t.string   "email"
     t.string   "fax_phone"
     t.string   "primary_phone"
-    t.string   "DFP_id"
+    t.string   "dfp_id"
     t.text     "comment"
     t.boolean  "enable_same_advertiser_competitive_exclusion"
     t.datetime "created_at"
@@ -52,7 +67,7 @@ ActiveRecord::Schema.define(:version => 20111214130427) do
     t.string   "label_type"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "DFPid"
+    t.integer  "dfpid"
     t.datetime "synced_at"
   end
 

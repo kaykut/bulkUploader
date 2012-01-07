@@ -1,4 +1,5 @@
-<table class="zebra-striped" class="bordered-table" class="condensed-table">
+<%= render 'layouts/action_bar'%>
+<table class="zebra-striped bordered-table condensed-table">
   <thead>
 		<tr>
     	<th>Name</th>
@@ -29,7 +30,3 @@
 		<% end %>
 	</tbody>
 </table>
-
-<br />
-
-<%= link_to 'New Upload', new_upload_path %>

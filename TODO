@@ -1,0 +1,3 @@
+- Implement Simpleform instead of twitter_bootstrap_form
+- fix edit for Ad Unit. (parsing ad unit sizes, ; separator message on the form itself)
+- implement import for adunit csv. 

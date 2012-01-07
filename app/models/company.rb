@@ -21,7 +21,7 @@ class Company < ActiveRecord::Base
   def self.params_dfp2bulk(params)
     params[:company_type] = params[:type]
     params.delete(:type)
-    params[:DFP_id] = params[:id]
+    params[:dfp_id] = params[:id]
     params.delete(:id)
     params.delete(:applied_labels)
     return params
@@ -29,7 +29,7 @@ class Company < ActiveRecord::Base
   
   def params_bulk2dfp
     params = {}
-    params[:id] = self.DFP_id unless self.DFP_id.nil?
+    params[:id] = self.dfp_id unless self.dfp_id.nil?
     params[:name] = self.name
     params[:email] = self.email
     params[:type] = self.company_type
@@ -41,6 +41,8 @@ class Company < ActiveRecord::Base
     params[:applied_labels] = []
     return params
   end
+
+
 
 	def self.row_to_params(row)
     return nil if row.blank?
@@ -72,21 +74,8 @@ class Company < ActiveRecord::Base
 	end
 	
   def exists?
-    if Company.find_by_name(self.name)
-      return true
-    else
-      return false
-    end
+    Company.find_by_name(self.name) ? true : false
   end
-  
-  def synced?
-    if self.DFP_id 
-      return 'YES'
-    else
-      return 'NO'
-    end
-  end
-
 	
 	def label_list
 	  ll = ''

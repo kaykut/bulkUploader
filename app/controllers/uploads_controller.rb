@@ -51,6 +51,9 @@ class UploadsController < ApplicationController
 
     @upload.save_temp
 
+    if @upload.datatype == 'AdUnits'
+      get_root_ad_unit
+    end
     @upload.import
 #    @upload.delay.import
 
@@ -101,6 +104,13 @@ class UploadsController < ApplicationController
   def download
     @upload = Upload.find(params[:id])
     send_file @upload.location + @upload.errors_file, :type => "application/csv"
+  end
+
+  def import
+    @upload.import
+#    @upload.delay.import
+    @upload.save
+    redirect_to uploads_url 
   end
 
   private

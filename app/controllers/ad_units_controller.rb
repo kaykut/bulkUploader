@@ -1,4 +1,6 @@
 class AdUnitsController < ApplicationController
+  require 'dfp_api'
+
   # GET /ad_units
   # GET /ad_units.json
   def index
@@ -80,4 +82,44 @@ class AdUnitsController < ApplicationController
       format.json { head :ok }
     end
   end
+  
+  def sync_to_dfp
+    super
+    redirect_to :controller => @current_controller, :action => 'index'     
+    
+  end
+  
+  def sync_from_dfp
+    parent_updates = super
+    root_ad_unit = get_root_ad_unit
+    parent_updates.each do |au|
+      if au.parent_id_dfp == root_ad_unit.dfp_id
+        au.level = 1
+        au.parent_id_bulk = root_ad_unit.id
+      else
+        parent = AdUnit.find_by_dfp_id(au.parent_id_dfp)
+        unless parent.blank?
+          au.parent_id_bulk = parent.id
+          parent = nil
+        end
+      end
+      au.save(:validate => false)
+    end
+    
+    
+    AdUnit.find_all_by_level(nil).each do |au|
+      au.level = au.get_level
+      au.save(:validate => false)
+    end
+    
+    redirect_to :controller => @current_controller, :action => 'index'     
+    
+  end
+  
+  def clear_all
+    super
+    AdUnitSize.delete(AdUnitSize.all)
+  end
+  
+	
 end

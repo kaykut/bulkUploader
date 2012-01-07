@@ -85,18 +85,15 @@ class CompaniesController < ApplicationController
       format.json { head :ok }
     end
   end
-  
-  def clear_all
-    Company.delete( Company.all )
-    redirect_to companies_path
-  end
 
   def sync_from_dfp
     super
+    redirect_to :controller => @current_controller, :action => 'index'     
   end
 
   def sync_to_dfp
     super
+    redirect_to :controller => @current_controller, :action => 'index'     
   end
 
 end

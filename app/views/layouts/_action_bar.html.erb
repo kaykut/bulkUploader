@@ -1,8 +1,10 @@
 <div>
 	<ul class="pills">
 		<li><%= link_to "New #{@current_controller.singularize.capitalize}", :controller => @current_controller, :action => 'new' %> </li>
-		<li><%= link_to "Sync #{@current_controller.capitalize} from Server", { :controller => @current_controller, :action => 'sync_from_dfp' }, { :confirm => "All your local modifications over existing #{@current_controller} will be overwritten.\n\nAre you sure?" } %> </li>
-		<li><%= link_to "Sync #{@current_controller.capitalize} to Server", { :controller => @current_controller, :action => 'sync_to_dfp' }, { :confirm => "All your local #{@current_controller} will be created in the server. This CAN NOT be undone.\n\nAre you sure?" } %> </li>
-		<li><%= link_to "Delete all #{@current_controller.capitalize} in local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller} will be deleted. The data already in the DFP Servers will NOT be affected.\n\nAre you sure?" } %></li>
+		<li><%= link_to "Delete all #{@current_controller.capitalize} in local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller} will be deleted. The data already in the dfp Servers will NOT be affected.\n\nAre you sure?" } %></li>
+		<% if @current_controller.capitalize != "Uploads" %>
+			<li><%= link_to "Sync #{@current_controller.capitalize} from Server", { :controller => @current_controller, :action => 'sync_from_dfp' }, { :confirm => "All your local modifications over existing #{@current_controller} will be overwritten.\n\nAre you sure?" } %> </li>
+			<li><%= link_to "Sync #{@current_controller.capitalize} to Server", { :controller => @current_controller, :action => 'sync_to_dfp' }, { :confirm => "All your local #{@current_controller} will be created in the server. This CAN NOT be undone.\n\nAre you sure?" } %> </li>
+		<% end %>
 	</ul>
 </div>

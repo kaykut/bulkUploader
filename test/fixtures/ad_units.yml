@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  DFP_id: MyString
+  dfp_id: MyString
   parent_id: MyString
   name: MyString
   description: MyString
@@ -10,7 +10,7 @@ one:
   explicitly_targeted: false
 
 two:
-  DFP_id: MyString
+  dfp_id: MyString
   parent_id: MyString
   name: MyString
   description: MyString

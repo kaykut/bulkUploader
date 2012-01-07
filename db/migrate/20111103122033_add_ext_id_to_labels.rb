@@ -1,5 +1,5 @@
 class AddExtIdToLabels < ActiveRecord::Migration
   def change
-    add_column :labels, :DFPid, :integer
+    add_column :labels, :dfpid, :integer
   end
 end

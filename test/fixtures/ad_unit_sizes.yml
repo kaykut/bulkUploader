@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  height: 1
+  width: 1
+  is_aspect_ratio: false
+  environment_type: MyString
+
+two:
+  height: 1
+  width: 1
+  is_aspect_ratio: false
+  environment_type: MyString

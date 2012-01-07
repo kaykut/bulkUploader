@@ -1,5 +1,5 @@
 <%= render 'layouts/action_bar'%>
-<table class="zebra-striped" class="bordered-table" class='condensed-table'>
+<table class="zebra-striped bordered-table condensed-table"> 
   <thead>
 		<tr>
 	    <th>Name</th>
@@ -13,7 +13,7 @@
 		  <tr>
 		    <td><%= company.name %></td>
 		    <td><%= company.company_type %></td>
-		    <td><%= company.synced? %></td>	
+		    <td><%= company.dfp_id.blank? ? "No" : "YES" %></td>	
 		    <td><%= link_to 'Details', company %>
 		    		<%= link_to 'Edit', edit_company_path(company) %>
 		    		<%= link_to 'Destroy', company, confirm: 'Are you sure?', method: :delete %></td>
@@ -21,5 +21,3 @@
 		<% end %>
 	</tbody>
 </table>
-
-<br />

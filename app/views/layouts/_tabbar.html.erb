@@ -19,6 +19,12 @@
       <li><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
     <%end%>
 
+    <% if @current_controller == "ad_units" %>
+      <li class='active'><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
+    <%end%>
+
     <% if @current_controller == "users" %>
       <li class='active'><%= link_to "Login Data", {:controller => 'users', :action =>'login'} %></li>
     <%else%>

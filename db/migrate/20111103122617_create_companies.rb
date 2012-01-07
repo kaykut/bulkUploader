@@ -7,7 +7,7 @@ class CreateCompanies < ActiveRecord::Migration
       t.string :email
       t.string :fax_phone
       t.string :primary_phone
-      t.string :DFP_id
+      t.string :dfp_id
       t.text :comment
       t.boolean :enable_same_advertiser_competitive_exclusion
 

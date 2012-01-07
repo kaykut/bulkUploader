@@ -1,19 +1,11 @@
 class ApplicationController < ActionController::Base
+  require 'dfp_api'
   protect_from_forgery
   before_filter :authorize, :except => [:login]
   before_filter :set_currents
   
   API_VERSION = 'v201108'
 
-  protected
-	def authorize
-    if session[:user].blank?
-      flash[:notice] = "Please provide API Login Data"
-      redirect_to :controller => 'users', :action => 'login'
-    end
-  end
-
-	private
 	def user_session
 		@user_session ||= UserSession.new(session)
 	end
@@ -24,18 +16,24 @@ class ApplicationController < ActionController::Base
   end
 
   def sync_from_dfp
+    
     # Define initial values.
     result_page = {}
     flash[:error] = ''
     update_count = new_count = error_count = 0
-    limit = 9999
+    limit = 9
     statement = {:query => "LIMIT %d" % limit}
     type = @current_controller.singularize
 
     # Get API instance.
     dfp = get_dfp_instance       
     # Get the Service.
-    dfp_service = eval( 'dfp.service(:' + type.capitalize + 'Service, API_VERSION)' )
+    
+    if type == 'ad_unit'
+      dfp_service = dfp.service(:InventoryService, API_VERSION)
+    else
+      dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+    end
     begin 
 
       result_page = eval( 'dfp_service.get_' + type.pluralize + '_by_statement(statement)' )
@@ -55,23 +53,27 @@ class ApplicationController < ActionController::Base
     
     redirect_to :controller => @current_controller, :action => 'index' and return if not flash[:error].blank?
     
-    result_page[:results].each do |cp|
-      cp = eval(type.capitalize + '.params_dfp2bulk(cp)')
-      if will_update = eval( type.capitalize + '.find_by_DFP_id( cp[:DFP_id] )')
-        if will_update.update_attributes( cp )
-          update_count += 1
-        else
-          error_count += 1
-        end
+    parent_updates = []
+    result_page[:results].each do |result|
+      debugger
+      cp = eval(type.classify + '.params_dfp2bulk(result)')
+      to_be_updated = eval( type.classify + '.find_by_dfp_id( cp[:dfp_id] )')
+      if to_be_updated
+        to_be_updated.attributes = cp
+        to_be_updated.save( :validate => false )
+        update_count += 1
       else
-        dc = eval( type.capitalize + '.new(cp)' )
-        if dc.save
-          new_count += 1
-        else
-          error_count += 1
+        dc = eval( type.classify + '.new(cp)' )
+        if type == 'ad_unit' and result[:parent_id].nil?
+          dc.level = 0
         end
+        a = dc.dup
+        a.save(:validate => false)
+        parent_updates << a
+        new_count += 1
       end
     end
+    error_count = result_page[:results].size - ( update_count + new_count )
     
     if new_count != 0
       flash[:success] = new_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully CREATED in local DB.'
@@ -80,13 +82,12 @@ class ApplicationController < ActionController::Base
       flash[:notice] = update_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully UPDATED in local DB.'
     end
     if error_count != 0
-      flash[:error] += '\n' + error_count.to_s + ' ' + type.pluralize.capitalize + ' could NOT be synced to local DB.'
+      flash[:error] += '\n' + error_count.to_s + ' ' + type.pluralize.capitalize + ' have NOT BEEN CREATED/UPDATED in the local DB. Contact kaya@google.com.'
     end
     
-    redirect_to :controller => @current_controller, :action => 'index'     
+    return parent_updates if type == 'ad_unit'
+    
   end
-
-
 
   def sync_to_dfp 
     flash[:error] = ''
@@ -95,7 +96,11 @@ class ApplicationController < ActionController::Base
     dfp = get_dfp_instance
 
     # Get the Service.
-    dfp_service = eval( 'dfp.service(:' + type.capitalize + 'Service, API_VERSION)' )
+    if type == 'ad_unit'
+      dfp_service = dfp.service(:InventoryService, API_VERSION)
+    else
+      dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+    end
 
     # Define initial values.
     limit = 9999
@@ -104,17 +109,17 @@ class ApplicationController < ActionController::Base
     to_update = []
     created = []
     updated = []
-    all_locals = eval( type.capitalize + '.all' )
+    all_locals = eval( type.classify + '.all' )
     
     all_locals.each do |c|
-      if c.DFP_id.blank?
+      if c.dfp_id.blank?
         to_create << c.params_bulk2dfp
       elsif c.synced_at || c.created_at < c.updated_at
         to_update << c.params_bulk2dfp
       end
     end
 
-    debugger
+    
     begin
       created = eval( 'dfp_service.create_' + type.pluralize + '(to_create)' ) unless to_create.blank?
       updated = eval( 'dfp_service.update_' + type.pluralize + '(to_update)' ) unless to_update.blank?
@@ -128,11 +133,11 @@ class ApplicationController < ActionController::Base
       end
     end    
     
-    debugger
+    
     created.each do |cc|
-      local = eval( type.capitalize + '.find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
+      local = eval( type.classify + '.find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
       if local
-        local.DFP_id = cc[:id]
+        local.dfp_id = cc[:id]
         local.synced_at = Time.now
         local.save
       end
@@ -145,10 +150,7 @@ class ApplicationController < ActionController::Base
       flash[:warning] = updated.size.to_s + @current_controller.capitalize + 'have been successfully updated in server.'
     end
     
-    redirect_to :controller => @current_controller, :action => 'index'
-
   end
-
   
   def get_dfp_instance
     dfp = DfpApi::Api.new({
@@ -161,6 +163,113 @@ class ApplicationController < ActionController::Base
         },
      :service => { :environment => session[:user][:environment] } })
      return dfp
+  end
+  
+  
+  def get_root_ad_unit
+  
+    root_au = AdUnit.find_by_level(0)
+    return root_au if root_au
+    
+    dfp = get_dfp_instance 
+    network_service = dfp.service(:NetworkService, API_VERSION)
+    effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
+    root_au = AdUnit.new(:name => session[:user][:network].to_s, 
+                         :level => 0,
+                         :dfp_id => effective_root_ad_unit_id )
+
+    root_au.save
+    return root_au
+	end	
+	
+  def clear_all
+    eval( @current_controller.classify + '.delete(' + @current_controller.classify + '.all)' )
+    if @current_controller == 'uploads'
+      Dir.glob(Rails.root.to_s + '/tmp/uploads/*.*').each do |file|
+        File.delete(file)
+      end
+    end
+    redirect_to :controller => @current_controller, :action => 'index'
+  end
+    
+  protected
+	def authorize
+    if session[:user].blank?
+      flash[:notice] = "Please provide API Login Data"
+      redirect_to :controller => 'users', :action => 'login'
+    end
+  end
+
+  
+  private
+  
+  # FROM SAMPLE CODE 
+  def get_ad_units_by_statement
+
+    # Get DfpApi instance and load configuration from ~/dfp_api.yml.
+    dfp = get_dfp_instance
+
+    # To enable logging of SOAP requests, set the log_level value to 'DEBUG' in
+    # the configuration file or provide your own logger:
+    # dfp.logger = Logger.new('dfp_xml.log')
+
+    # Get the InventoryService.
+    inventory_service = dfp.service(:InventoryService, API_VERSION)
+
+    # Get the NetworkService.
+    network_service = dfp.service(:NetworkService, API_VERSION)
+
+    # Get the effective root ad unit ID of the network.
+    effective_root_ad_unit_id =
+        network_service.get_current_network[:effective_root_ad_unit_id]
+
+    puts "Using effective root ad unit: %d" % effective_root_ad_unit_id
+
+    # Create a statement to select the children of the effective root ad unit.
+    statement = {
+       :query => 'WHERE parentId = :id LIMIT 500',
+       :values => [
+           {:key => 'id',
+            :value => {:value => effective_root_ad_unit_id,
+                       :xsi_type => 'NumberValue'}}
+       ]
+    }
+
+    # Get ad units by statement.
+    page = inventory_service.get_ad_units_by_statement(statement)
+
+    if page[:results]
+      # Print details about each ad unit in results.
+      page[:results].each_with_index do |ad_unit, index|
+        puts "%d) Ad unit ID: %d, name: %s, status: %s." %
+            [index, ad_unit[:id], ad_unit[:name], ad_unit[:status]]
+      end
+    end
+
+    # Print a footer.
+    if page.include?(:total_result_set_size)
+      puts "Total number of ad units: %d" % page[:total_result_set_size]
+    end
+
+    begin
+      get_ad_units_by_statement()
+
+    # HTTP errors.
+    rescue AdsCommon::Errors::HttpError => e
+      puts "HTTP Error: %s" % e
+
+    # API errors.
+    rescue DfpApi::Errors::ApiException => e
+      puts "Message: %s" % e.message
+      puts 'Errors:'
+      e.errors.each_with_index do |error, index|
+        puts "\tError [%d]:" % (index + 1)
+        error.each do |field, value|
+          puts "\t\t%s: %s" % [field, value]
+        end
+      end
+    end
+  
   end
   
 end

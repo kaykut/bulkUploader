@@ -1,8 +1,10 @@
 class Upload < ActiveRecord::Base
   require 'csv'
-  cattr_accessor :file
+  attr_accessor :file
+  attr_accessor :has_header
 
   after_initialize :assign_filename
+  after_initialize :set_has_header_value
 
   validates_presence_of :filename, :location
   validate :type_extension
@@ -55,7 +57,7 @@ class Upload < ActiveRecord::Base
     self.status = 'Processing'
     self.save
 #initialize vars
-    data_class = self.datatype.singularize.capitalize #class of data we're importing
+    data_class = self.datatype.classify #class of data we're importing
     csv_is_erroneous = false #global indicator of error
     saved_data = []  #array to contain all objects to be inserted to DB in case no errors in csv file
     deleted_data = [] #array to contain all objects to be deleted from DB in case of no errors & overwrite
@@ -70,58 +72,53 @@ class Upload < ActiveRecord::Base
 
 #open output file for write
     CSV.open( csv_file_out, "wb" ) do |csv|
-#    csv_string = CSV.generate do |csv|
 
-
-#      File.open( csv_file_in ).each do |csv_line_in| #read original file line-by-line
 			count = 0
-#        CSV.parse(csv_line_in ) do |row_in|
-        CSV.foreach( csv_file_in ) do |row_in|
+      CSV.foreach( csv_file_in ) do |row_in|
 # skip header row
-					count += 1
-          if count == 1
-            csv << row_in 
-          	next
-          end
+debugger
+				count += 1
+        if self.has_header and count == 1
+          csv << row_in 
+        	next
+        end
+        row_out = []
+debugger
+        params = eval(data_class + '.row_to_params( row_in )')
+        # dummy_data = nil
+        dummy_data = eval(data_class + '.new( params )')
 
-          row_out = []
-
-          params = eval(data_class + '.row_to_params( row_in )')
-          dummy_data = nil
-
-          dummy_data = eval(data_class + '.new( params )')
-          row_out = row_in #dump the original csv content into csv with errors
-          exists = dummy_data.exists?
-          if dummy_data.valid?
-            if exists
-              if self.overwrite
-                deleted_data << exists
-                eval( data_class + '.delete( exists )' )
-                saved_data << dummy_data
-                dummy_data.save
-              else #do NOT overwrite
-                csv_is_erroneous = true unless csv_is_erroneous
-                row_out << ERROR_MARK_STRING
-                row_out << DATA_EXISTS_ERROR_MSG #exists contain error msg if exists, false if not.
-              end
-            else #does not already exist
-              dummy_data.save
+        row_out = row_in #dump the original csv content into csv with errors
+        exists = dummy_data.exists?
+        if dummy_data.valid?
+          if exists
+            if self.overwrite
+              deleted_data << exists
+              eval( data_class + '.delete( exists )' )
               saved_data << dummy_data
+              dummy_data.save
+            else #do NOT overwrite
+              csv_is_erroneous = true unless csv_is_erroneous
+              row_out << ERROR_MARK_STRING
+              row_out << DATA_EXISTS_ERROR_MSG #exists contain error msg if exists, false if not.
             end
-
-          else #not valid
-            csv_is_erroneous = true unless csv_is_erroneous
-            row_out << ERROR_MARK_STRING
-            dummy_data.errors.each do |attribute, error|
-              
-              row_out << attribute.to_s + ': ' + error.to_s
-            end
-            row_out << DATA_EXISTS_ERROR_MSG if exists
+          else #does not already exist
+            dummy_data.save
+            saved_data << dummy_data
           end
-        csv << row_out
 
-        end           #end of CSV.parse(csv_line_in)
-#      end             #end of File.open(file_in)
+        else #not valid
+          csv_is_erroneous = true unless csv_is_erroneous
+          row_out << ERROR_MARK_STRING
+          dummy_data.errors.each do |attribute, error|
+            
+            row_out << attribute.to_s + ': ' + error.to_s
+          end
+          row_out << DATA_EXISTS_ERROR_MSG if exists
+        end
+      csv << row_out
+
+      end           #end of CSV.parse(csv_line_in)
     end               #end of erroneous CSV file write
 #
 
@@ -167,6 +164,10 @@ class Upload < ActiveRecord::Base
     end
   end
 
+  def set_has_header_value
+    self.has_header = self.has_header == "0" ? false : true
+  end
+
   def assign_filename
     if self.id.nil?
       self.filename = self.file.original_filename unless file.nil?
@@ -185,6 +186,7 @@ class Upload < ActiveRecord::Base
       errors.add(:label_type, EXTENSION_TYPE_NOT_COMPATIBLE_MSG)
     end
   end
+
 
 end
 
