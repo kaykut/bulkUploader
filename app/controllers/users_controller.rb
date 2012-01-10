@@ -2,8 +2,6 @@ class UsersController < ApplicationController
   
   def login
     
-	    <th>Actions</th>
-
     if request.post?
       session[:user] = {}
       session[:user][:email] = params[:user][:email] 

@@ -81,8 +81,6 @@ class Upload < ActiveRecord::Base
         	next
         end
         row_out = []
-        
-	    <th>Actions</th>
 
         params = eval(data_class + '.row_to_params( row_in )')
         # dummy_data = nil
