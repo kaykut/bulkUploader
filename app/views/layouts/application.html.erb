@@ -12,25 +12,28 @@
 </head>
 <body style='padding-top:50px'>
 	<div class='container'>
+		<h1>Bulk Upload Tools for DFP Premium<br/></h1>
 		<div id='header'>
 			<%= render '/layouts/tabbar' %>
 		<div>
 			
+		<% if not flash[:info].blank?%>
+			<div class="alert-message block-message info">
+	    <p><%= flash[:info] %></p>
+	  </div>
+		<% end %>
 		<% if not flash[:success].blank?%>
-			<div class="alert-message success">
-	    <a class="close" href="#">×</a>
+			<div class="alert-message block-message success">
 	    <p><%= flash[:success] %></p>
 	  </div>
 		<% end %>
 		<% if not flash[:error].blank?%>
-			<div class="alert-message error">
-	    <a class="close" href="#">×</a>
+			<div class="alert-message block-message error">
 	    <p><%= flash[:error] %></p>
 	  </div>
 		<% end %>
 		<% if not flash[:notice].blank?%>
-			<div class="alert-message warning">
-	    <a class="close" href="#">×</a>
+			<div class="alert-message block-message warning">
 	    <p><%= flash[:notice] %></p>
 	  </div>
 		<% end %>

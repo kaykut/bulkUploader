@@ -1,11 +1,20 @@
 <%= render 'layouts/action_bar'%>
-<table class="zebra-striped bordered-table condensed-table"> 
+<div class="alert-message block_message warning">
+	<p>As <strong>Companies</strong> might have <strong>Labels</strong> assigned please <strong>make sure</strong>:</p><br/>
+	<ul>
+		<li>Sync Labels FROM DFP, <strong>before syncing Companies FROM DFP</strong></li>
+		<li>Sync any Labels you will have TO DFP, <strong>before syncing Companies TO DFP</strong></li>
+	</ul>
+</div>
+
+<table class="zebra-striped bordered-table super-condensed-table"> 
   <thead>
 		<tr>
 	    <th>Name</th>
 	    <th>Type</th>
-	    <th>Synced?</th>
-	    <th></th>
+	    <th>Labels</th>
+	    <th>Synced to DFP?</th>
+	    <th>Actions</th>
 		</tr>
   </thead>
 	<tbody>
@@ -13,10 +22,11 @@
 		  <tr>
 		    <td><%= company.name %></td>
 		    <td><%= company.company_type %></td>
-		    <td><%= company.dfp_id.blank? ? "No" : "YES" %></td>	
+				<td><%= company.label_list%></td>
+		    <td><%= company.dfp_id.blank? ? "No" : "Yes" %></td>	
 		    <td><%= link_to 'Details', company %>
 		    		<%= link_to 'Edit', edit_company_path(company) %>
-		    		<%= link_to 'Destroy', company, confirm: 'Are you sure?', method: :delete %></td>
+		    		<%= link_to 'Delete', company, confirm: 'Are you sure?', method: :delete %></td>
 		  </tr>
 		<% end %>
 	</tbody>

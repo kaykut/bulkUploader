@@ -1,8 +1,7 @@
 name,company_type,address,email,fax_phone,primary_phone,external_id,comment,enable_same_advertiser_competitive_exclusion,labels
-neisolsayaparim,ADVERTISER,pariste bi yerde,falanca@email.com,,,,falanca,FALSE,
-channel,ADVERTISER,ben ne bilem,tekrar@orta.com,,,,heyhey,TRUE,
-iberia,ADVERTISER,orda bi taraf,orda@garibim.com,,,,torba,,
-ajans,AGENCY,,agency@blabla.com
-houseads,HOUSE_ADVERTISER,,houseads@adsf.com
-houseagc,HOUSE_AGENCY,,houseagc@asdf.com
-adnw,AD_NETWORK,,adnw@falan.com
+channel,ADVERTISER,,,,,,,,,perfume;airlines
+iberia,ADVERTISER,,,,,,,,,airlines;perfume
+ajans,AGENCY,,,,,,,,,
+houseads,HOUSE_ADVERTISER,,,,,,,,,
+houseagc,HOUSE_AGENCY,,,,,,,,,
+adnw,AD_NETWORK,,,,,,,,,

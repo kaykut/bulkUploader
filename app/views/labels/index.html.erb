@@ -1,24 +1,23 @@
 <%= render 'layouts/action_bar'%>
-<table class="zebra-striped bordered-table condensed-table">
+<table class="zebra-striped bordered-table super-condensed-table green">
 	<thead>
 	  <tr>
 	    <th>Name</th>
-	    <th>Description</th>
 	    <th>Type</th>
-	    <th></th>
-	    <th></th>
-	    <th></th>
+	    <th>Description</th>
+	    <th>Synced to DFP?</th>
+	    <th>Actions</th>
 	  </tr>
 	</thead>
 	<tbody>
 		<% @labels.each do |label| %>
 		  <tr>
 		    <td><%= label.name %></td>
-		    <td><%= label.description %></td>
 		    <td><%= label.label_type %></td>
-		    <td><%= link_to 'Details', label %>
-		    		<%= link_to 'Edit', edit_label_path(label) %>
-		    		<%= link_to 'Destroy', label, confirm: 'Are you sure?', method: :delete %></td>
+		    <td><%= label.description %></td>
+				<td><%= label.dfp_id.blank? ? "No" : "Yes" %></td>	
+		    <td><%= link_to 'Edit', edit_label_path(label) %>
+		    		<%= link_to 'Delete', label, confirm: 'Are you sure?', method: :delete %></td>
 		  </tr>
 		<% end %>
 	</tbody>

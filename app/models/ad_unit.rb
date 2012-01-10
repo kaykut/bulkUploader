@@ -6,59 +6,67 @@ class AdUnit < ActiveRecord::Base
   # t.string   "description"
   # t.string   "target_window"
   # t.boolean  "explicitly_targeted"
-  
+  require 'csv'
+    
   has_and_belongs_to_many :ad_unit_sizes
-  has_many :children, :class_name => 'AdUnit'
+  has_many :children, :class_name => 'AdUnit', :foreign_key => :parent_id_bulk, :dependent => :destroy
   belongs_to :parent, :class_name => 'AdUnit', :foreign_key => :parent_id_bulk
-  accepts_nested_attributes_for :ad_unit_sizes
+  accepts_nested_attributes_for :ad_unit_sizes, :reject_if => :already_exists
   
   before_save :assign_defaults
+  before_save :remove_trailing_spaces
   
-	validates :name, :presence => true, :length => { :maximum => 100 }, :uniqueness => { :case_sensitive => false, :scope => :parent_id_bulk }
+  
+	validates :name, :presence => true, 
+	                 :length => { :maximum => 100 }, 
+	                 :uniqueness => { :case_sensitive => false, :scope => :parent_id_bulk }
 	validates :description, :length => {:maximum => 65535}
 	validate :target_window_value_ok, :unless => :is_root_level?
-	
+	validate :target_platform_value_ok, :unless => :is_root_level?
+		
 	attr_accessor :ad_unit_sizes_list
-	
+	attr_accessor :top_parent_name
 	TARGET_WINDOWS = ['TOP', 'BLANK']
-
+  TARGET_PLATFORMS = ['WEB', 'MOBILE']
+  
 	def exists?
     AdUnit.find_by_parent_id_bulk_and_name( self.parent_id_bulk, self.name? ) ? true : false
 	end
 	
-	def self.params_dfp2bulk(pars)
-	  params = pars.dup
-	  params.delete(:inherited_ad_sense_settings)
-	  params.delete(:status)
-	  params.delete(:ad_unit_code)
-    params[:ausizes] = params[:ad_unit_sizes]
-    params.delete(:ad_unit_sizes)
+	
+	def self.params_dfp2bulk(p)
+	  params = {}
+    params[:name] = p[:name]
+    params[:description] = p[:description] 
+    params[:target_window] = p[:target_window]
+    params[:explicitly_targeted] = p[:explicitly_targeted]
+    params[:target_platform] = p[:target_platform]
     params[:ad_unit_sizes_attributes] = []
-	  params[:ausizes].each do |s|
-	    
+	  p[:ad_unit_sizes].each do |s|
       params[:ad_unit_sizes_attributes] << AdUnitSize.params_dfp2bulk(s)
     end
-    params.delete(:ausizes)
-    params[:dfp_id] = params[:id]
-    params.delete(:id)
-    # if AdUnit.find_by_dfp_id(params[:parent_id])
-    #   params[:parent_id_bulk] = AdUnit.find_by_dfp_id(params[:parent_id]).id
-    # end
-    params[:parent_id_dfp] = params[:parent_id]
-    params.delete(:parent_id)
+    params[:dfp_id] = p[:id].to_s
+    if p[:parent_id].nil?
+      params[:level] = 0
+    else
+      params[:parent_id_dfp] = p[:parent_id]
+    end
     return params
 	end
 	
-	def params_bulk2dfp
+	def params_bulk2dfp(update = false)
+	  params = {}
 	  params[:name] = self.name
 	  params[:id] = self.dfp_id
-	  params[:parent_id] = self.parent_id_dfp
+	  params[:parent_id] = self.parent.dfp_id
 	  params[:description] = self.description
 	  params[:target_window] = self.target_window
     params[:ad_unit_sizes] = []
+    params[:target_platform] = self.target_platform
     self.ad_unit_sizes.each do |s|
       params[:ad_unit_sizes] << s.params_bulk2dfp
     end
+    params[:id] = self.dfp_id if update
 	  return params
 	end
 
@@ -71,26 +79,30 @@ class AdUnit < ActiveRecord::Base
 	end
 
 	def self.row_to_params( row )
+	  
 	  return nil if row.blank?
 	  params = {}
 	  parent = AdUnit.find_by_level(0)
 
-debugger
+
     for i in 0..4
       if row[i+1].blank? or i == 4
         params[:parent_id_bulk] = parent.id
         break
       else
-        parent = parent.children.find{ |name| name == row[i] }
+        
+        parent = parent.children.find{ |au| au.name == row[i] }
       end
     end
   
-    params[:level] = i
+    params[:level] = i+1
     params[:name] = row[i]
     params[:ad_unit_sizes_attributes] = ad_unit_sizes_params( row[5] )
     params[:target_window] = row[6]
     params[:explicitly_targeted] = row[7]
-    params[:description] = row[8]
+    params[:target_platform] = row[8]
+    params[:description] = row[9]
+
     return params
     
 	end
@@ -99,7 +111,7 @@ debugger
 	  sl = ''
 	  self.ad_unit_sizes.each_with_index do |l, i|
       sl += l.width.to_s + 'x' + l.height.to_s
-      sl += ', ' if i < ( self.ad_unit_sizes.size - 1 )
+      sl += '; ' if i < ( self.ad_unit_sizes.size - 1 )
 	  end
 	  return sl
 	end
@@ -118,11 +130,22 @@ debugger
       else
         params[:environment_type] ='BROWSER' 
       end
-      params[:width], params[:height] = CSV.parse_line(s, :col_sep => 'x')
+      wh = CSV.parse_line(s, :col_sep => 'x')
+      params[:width] = wh[0].to_i
+      params[:height] = wh[1].to_i
       ad_unit_sizes_attributes << params
     end
 
     return ad_unit_sizes_attributes
+	end
+	
+	def get_parent_of_level(level, attribute = nil)
+	  return '' if self.level < level
+	  parent = self
+	  (self.level - level).times do
+      parent = parent.parent
+    end
+    attribute ? eval('parent.' + attribute) : parent
 	end
 	
 #TEST THIS
@@ -130,13 +153,25 @@ debugger
 	  
 	  return if slist.blank?
     
-    ad_unit_sizes_attributes = ad_unit_sizes_params(slist)
+    ad_unit_sizes_attributes = AdUnit.ad_unit_sizes_params(slist)
     ad_unit_sizes_attributes.each do |params|
       self.ad_unit_sizes << AdUnitSize.new(params)
     end
 
   end
+  
+  def top_parent_name
+    get_parent_of_level(1, 'name')    
+  end
+  
+  def full_tree_name
+    name = ''
+    5.times do |i|
+		  name += self.get_parent_of_level(i+1, 'name' ) + '/'
+		end
+  end
 
+  protected
   def assign_defaults
     self.explicitly_targeted = false if self.explicitly_targeted.blank?
     self.target_window = 'BLANK' if self.target_window.blank?
@@ -144,13 +179,38 @@ debugger
   
 # VALIDATIONS & RELATED
 	def target_window_value_ok
-	  unless ['BLANK', 'TOP'].include?(self.target_window)
+	  unless TARGET_WINDOWS.include?(self.target_window)
       errors.add('target_window', 'Permitted values are "TOP" and "BLANK".')
 	  end	 
 	end
+
+	def target_platform_value_ok
+	  unless AdUnit::TARGET_PLATFORMS.include?(self.target_platform)
+      errors.add('target_platform', 'Permitted values are "WEB" and "MOBILE".')
+	  end	 
+	end
+
 	
 	def is_root_level?
 	  self.level == 0 ? true : false
 	end
-	  
+	
+  def already_exists(params)
+    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type( params[:height],
+                                                                                        params[:width],
+                                                                                        params[:is_aspect_ratio],
+                                                                                        params[:environment_type] )
+    if aus 
+      self.ad_unit_sizes << aus
+      return true
+    else
+      return false
+    end
+  end
+
+  def remove_trailing_spaces
+    self.name.chop! while self.name.last == ' '
+    self.name.reverse!.chop!.reverse! while self.name.first == ' '
+  end
+
 end

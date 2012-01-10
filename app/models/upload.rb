@@ -53,7 +53,6 @@ class Upload < ActiveRecord::Base
   end
 
   def import
-
     self.status = 'Processing'
     self.save
 #initialize vars
@@ -69,21 +68,22 @@ class Upload < ActiveRecord::Base
       self.status = 'File not found'
       return
     end
-
 #open output file for write
     CSV.open( csv_file_out, "wb" ) do |csv|
 
 			count = 0
       CSV.foreach( csv_file_in ) do |row_in|
 # skip header row
-debugger
+
 				count += 1
         if self.has_header and count == 1
           csv << row_in 
         	next
         end
         row_out = []
-debugger
+        
+	    <th>Actions</th>
+
         params = eval(data_class + '.row_to_params( row_in )')
         # dummy_data = nil
         dummy_data = eval(data_class + '.new( params )')
@@ -103,6 +103,7 @@ debugger
               row_out << DATA_EXISTS_ERROR_MSG #exists contain error msg if exists, false if not.
             end
           else #does not already exist
+            1+'a'
             dummy_data.save
             saved_data << dummy_data
           end
@@ -120,9 +121,8 @@ debugger
 
       end           #end of CSV.parse(csv_line_in)
     end               #end of erroneous CSV file write
-#
 
-    self.delete_file('O') #REVISE - can depend on setting, we can charge for keeping files.
+    self.delete_file('O')
     if csv_is_erroneous
       eval(data_class + '.delete(saved_data)')
       deleted_data.each do |d|
@@ -139,6 +139,8 @@ debugger
       self.save
     end
 
+    return saved_data.size
+    
   end
 
   def destroy

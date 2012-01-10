@@ -25,15 +25,12 @@
       <li><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
     <%end%>
 
+		<% sd = session[:user].nil? ? 'NONE' : session[:user][:email] + ' - ' + session[:user][:network].to_s %>
     <% if @current_controller == "users" %>
-      <li class='active'><%= link_to "Login Data", {:controller => 'users', :action =>'login'} %></li>
+      <li class='active'><%= link_to "Login Data: #{sd}", {:controller => 'users', :action =>'login'} %></li>
     <%else%>
-      <li><%= link_to "Login Data", {:controller => 'users', :action => 'login'} %></li>
+      <li><%= link_to "Login Data: #{sd}", {:controller => 'users', :action => 'login'} %></li>
     <%end%>
-
-		<% unless session[:user].nil? %>
-			<li> <%= session[:user][:email] + ' - ' + session[:user][:network].to_s %> </li>
-		<% end %>
 
   </ul>
 </div>

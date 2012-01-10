@@ -1,4 +1,9 @@
 <%= twitter_bootstrap_form_for(@upload, :html => { :multipart => true }) do |f| %>
+	<% @upload.errors.each do |error| %>
+		<div class="alert-message success">
+    	<p><%= error.message %></p>
+  	</div>	
+	<% end %>
 	<%= f.inputs 'Upload', :class=> 'Upload' do %>
     <%= f.text_field :name, :placeholder => 'Not necessarily the filename' %>
     <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies', 'AdUnits'], :input_html => { :include_blank => false } %>

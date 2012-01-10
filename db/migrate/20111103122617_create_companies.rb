@@ -9,6 +9,7 @@ class CreateCompanies < ActiveRecord::Migration
       t.string :primary_phone
       t.string :dfp_id
       t.text :comment
+      t.string :credit_status
       t.boolean :enable_same_advertiser_competitive_exclusion
 
       t.timestamps

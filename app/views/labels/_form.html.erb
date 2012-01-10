@@ -1,8 +1,8 @@
 <%= twitter_bootstrap_form_for(@label) do |f| %>
 	<%=f.inputs 'Label', :class => 'Label' do %>
     <%= f.text_field :name %>
-    <%= f.text_area :description %><br />
-    <%= f.select 'label_type', 'Label Type', @label.label_types, :input_html => { :include_blank => false }  %>
+    <%= f.text_area :description, :rows => 4 %><br />
+    <%= f.select 'label_type', 'Label Type', Label::LABEL_TYPES, :input_html => { :include_blank => false }  %>
 	<% end %>
 	<%= f.actions do %>
     <%= f.submit %>

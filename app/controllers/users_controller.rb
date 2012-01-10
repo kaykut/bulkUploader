@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
   
   def login
+    
+	    <th>Actions</th>
+
     if request.post?
       session[:user] = {}
       session[:user][:email] = params[:user][:email] 
@@ -9,7 +12,7 @@ class UsersController < ApplicationController
       session[:user][:environment] = params[:user][:environment]
       redirect_to(:controller => "uploads", :action => "index")
     else 
-      params[:user] = nil 
+      @user = User.new(session[:user])
     end
     
   end

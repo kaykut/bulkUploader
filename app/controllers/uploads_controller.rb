@@ -26,7 +26,7 @@ class UploadsController < ApplicationController
   # GET /uploads/new
   # GET /uploads/new.xml
   def new
-    @upload = Upload.new
+    @upload = flash[:upload] || Upload.new 
 
     respond_to do |format|
       format.html # new.html.erb
@@ -46,22 +46,22 @@ class UploadsController < ApplicationController
     @upload = Upload.new(params[:upload])
 
     if @upload.filename.blank?
-      redirect_to uploads_url, :flash => { :error => "There was a problem with the upload." }
+      flash[:upload] = @upload
+      redirect_to new_upload_path, :flash => { :error => "Please choose a file to upload." } and return
     end
 
     @upload.save_temp
-
     if @upload.datatype == 'AdUnits'
       get_root_ad_unit
     end
-    @upload.import
+    number_saved = @upload.import
 #    @upload.delay.import
 
     @upload.save
 
     respond_to do |format|
       unless @upload.status == "Erroneous"
-        flash[:success] = 'File uploaded & imported successfully.'
+        flash[:success] = "File uploaded & imported successfully. #{number_saved.to_s + ' ' + @upload.datatype.pluralize} have been created."
         format.html { redirect_to(uploads_url) }
         format.xml  { render :xml => @upload, :status => :created, :location => @upload }
       else

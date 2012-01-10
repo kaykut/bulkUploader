@@ -86,14 +86,4 @@ class CompaniesController < ApplicationController
     end
   end
 
-  def sync_from_dfp
-    super
-    redirect_to :controller => @current_controller, :action => 'index'     
-  end
-
-  def sync_to_dfp
-    super
-    redirect_to :controller => @current_controller, :action => 'index'     
-  end
-
 end

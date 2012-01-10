@@ -2,7 +2,7 @@
 	<%= f.inputs do%>
     <%= f.text_field :name %>
     <%= f.select 'company_type', 'Company Type',
-							 @company.company_types,
+							 Company::COMPANY_TYPES,
 				   		 :input_html => { :include_blank => false } %>
     <%= f.text_field :address %>
     <%= f.text_field :email %>
@@ -13,7 +13,7 @@
 		<% f.toggles do %>
     	<%= f.check_box :enable_same_advertiser_competitive_exclusion %>
 		<% end %>
-    <%= f.text_area :comment %>
+    <%= f.text_area :comment, :rows => 4 %>
 	<% end %>
 	<%= f.actions do %>
     <%= f.submit %>

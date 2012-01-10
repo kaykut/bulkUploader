@@ -4,6 +4,7 @@ class CreateLabels < ActiveRecord::Migration
       t.string :name
       t.string :description
       t.string :label_type
+      t.string :dfp_id
 
       t.timestamps
     end

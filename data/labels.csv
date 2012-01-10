@@ -1,4 +1,4 @@
 name,desciption,label_type
-airlines,blablalba,COMPETITIVE_EXCLUSION
-perfume,hedehede,COMPETITIVE_EXCLUSION
-popup,falanca, AD_UNIT_FREQUENCY_CAP
+airlines,,COMPETITIVE_EXCLUSION
+perfume,,COMPETITIVE_EXCLUSION
+popup,,AD_UNIT_FREQUENCY_CAP

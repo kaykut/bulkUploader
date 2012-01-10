@@ -4,7 +4,7 @@
     <%= f.select 'target_window', 'Target Window',
 							 AdUnit::TARGET_WINDOWS,
 				   		 :input_html => { :include_blank => false } %>
-    <%= f.text_area :description %>
+    <%= f.text_area :description, :rows => 4 %>
     <%= f.text_field :ad_unit_sizes_list %>
 		<% f.toggles do %>
     	<%= f.check_box :explicitly_targeted %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111221110544) do
+ActiveRecord::Schema.define(:version => 20120108191614) do
 
   create_table "ad_unit_sizes", :force => true do |t|
     t.integer  "height"
@@ -34,10 +34,12 @@ ActiveRecord::Schema.define(:version => 20111221110544) do
     t.string   "name"
     t.string   "description"
     t.string   "target_window"
+    t.string   "target_platform"
     t.boolean  "explicitly_targeted"
     t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "synced_at"
   end
 
   create_table "companies", :force => true do |t|
@@ -49,6 +51,7 @@ ActiveRecord::Schema.define(:version => 20111221110544) do
     t.string   "primary_phone"
     t.string   "dfp_id"
     t.text     "comment"
+    t.string   "credit_status"
     t.boolean  "enable_same_advertiser_competitive_exclusion"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -65,9 +68,9 @@ ActiveRecord::Schema.define(:version => 20111221110544) do
     t.string   "name"
     t.string   "description"
     t.string   "label_type"
+    t.string   "dfp_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "dfpid"
     t.datetime "synced_at"
   end
 
@@ -97,7 +100,7 @@ ActiveRecord::Schema.define(:version => 20111221110544) do
   create_table "users", :force => true do |t|
     t.string   "email"
     t.string   "password"
-    t.integer  "network"
+    t.integer  "network_id"
     t.string   "environment"
     t.datetime "created_at"
     t.datetime "updated_at"

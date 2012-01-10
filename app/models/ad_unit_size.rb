@@ -14,30 +14,27 @@ class AdUnitSize < ActiveRecord::Base
   
   def assign_aspect_ratio
     self.is_aspect_ratio = self.is_aspect_ratio || false
+    return true
   end
   
-  def params_bulk2dfp
+  def params_bulk2dfp(update = false)
     params = {}
+    params[:size] = {}
     params[:size][:height] = self.height
     params[:size][:width] = self.width
     params[:size][:is_aspect_ratio] = self.is_aspect_ratio
     params[:environment_type] = self.environment_type
     params[:companions] = []
+    params[:id] = self.dfp_id if update
     return params 
   end
   
   def self.params_dfp2bulk(p)
     params = {}
-    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type()
     params[:height] = p[:size][:height]
     params[:width] = p[:size][:width]
     params[:is_aspect_ratio] = p[:size][:is_aspect_ratio]
     params[:environment_type] = p[:environment_type]
-    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type( params[:height],
-                                                                                        params[:width],
-                                                                                        params[:is_aspect_ratio],
-                                                                                        params[:environment_type] )
-    params[:id] = aus.id if aus
     return params
   end
   

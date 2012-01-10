@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   before_filter :authorize, :except => [:login]
   before_filter :set_currents
   
-  API_VERSION = 'v201108'
+  API_VERSION = 'v201111'
 
 	def user_session
 		@user_session ||= UserSession.new(session)
@@ -20,20 +20,24 @@ class ApplicationController < ActionController::Base
     # Define initial values.
     result_page = {}
     flash[:error] = ''
-    update_count = new_count = error_count = 0
-    limit = 9
+    no_update_needed_count = update_count = new_count = error_count = 0
+    limit = 9999
     statement = {:query => "LIMIT %d" % limit}
     type = @current_controller.singularize
 
     # Get API instance.
     dfp = get_dfp_instance       
     # Get the Service.
-    
     if type == 'ad_unit'
       dfp_service = dfp.service(:InventoryService, API_VERSION)
     else
       dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+      #Label_Service gives error when trying to get all labels. 
+      if type == 'label'
+        statement = Label.get_statement
+      end
     end
+    
     begin 
 
       result_page = eval( 'dfp_service.get_' + type.pluralize + '_by_statement(statement)' )
@@ -47,34 +51,35 @@ class ApplicationController < ActionController::Base
     # API errors.
     rescue DfpApi::Errors::ApiException => e
       e.errors.each_with_index do |error, index|
-        flash[:error] += "\n" + "%s: %s" % [error[:trigger], error[:error_string]]
+        flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
       end
     end    
     
     redirect_to :controller => @current_controller, :action => 'index' and return if not flash[:error].blank?
     
     parent_updates = []
+    
     result_page[:results].each do |result|
-      debugger
       cp = eval(type.classify + '.params_dfp2bulk(result)')
       to_be_updated = eval( type.classify + '.find_by_dfp_id( cp[:dfp_id] )')
       if to_be_updated
-        to_be_updated.attributes = cp
-        to_be_updated.save( :validate => false )
-        update_count += 1
+        to_be_updated.attributes = cp 
+        if to_be_updated.changed? and to_be_updated.save( :validate => false )
+          update_count += 1
+        else
+          no_update_needed_count += 1
+        end
       else
         dc = eval( type.classify + '.new(cp)' )
-        if type == 'ad_unit' and result[:parent_id].nil?
-          dc.level = 0
-        end
-        a = dc.dup
-        a.save(:validate => false)
-        parent_updates << a
+        dc.save(:validate => false)
+        parent_updates << dc
         new_count += 1
       end
     end
-    error_count = result_page[:results].size - ( update_count + new_count )
-    
+    error_count = result_page[:results].size - ( update_count + no_update_needed_count + new_count )
+
+    flash[:info] = result_page[:results].size.to_s + ' ' + type.pluralize.capitalize + ' have been retrieved from DFP.'
+    flash[:info] += " No updates to local DB were required." if error_count + update_count + error_count == 0
     if new_count != 0
       flash[:success] = new_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully CREATED in local DB.'
     end
@@ -82,14 +87,18 @@ class ApplicationController < ActionController::Base
       flash[:notice] = update_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully UPDATED in local DB.'
     end
     if error_count != 0
-      flash[:error] += '\n' + error_count.to_s + ' ' + type.pluralize.capitalize + ' have NOT BEEN CREATED/UPDATED in the local DB. Contact kaya@google.com.'
+      flash[:error] += '<br/>' + error_count.to_s + ' ' + type.pluralize.capitalize + ' have NOT BEEN CREATED/UPDATED in the local DB. <br/><strong>Contact kaya@google.com</strong>.'
     end
     
-    return parent_updates if type == 'ad_unit'
-    
+    if type == 'ad_unit'
+      return parent_updates 
+    else
+      redirect_to :controller => @current_controller, :action => 'index'     
+    end
   end
 
   def sync_to_dfp 
+    
     flash[:error] = ''
   
     type = @current_controller.singularize
@@ -115,24 +124,30 @@ class ApplicationController < ActionController::Base
       if c.dfp_id.blank?
         to_create << c.params_bulk2dfp
       elsif c.synced_at || c.created_at < c.updated_at
-        to_update << c.params_bulk2dfp
+        to_update << c.params_bulk2dfp(true)
       end
     end
 
     
-    begin
-      created = eval( 'dfp_service.create_' + type.pluralize + '(to_create)' ) unless to_create.blank?
-      updated = eval( 'dfp_service.update_' + type.pluralize + '(to_update)' ) unless to_update.blank?
-    # HTTP errors.
-    rescue AdsCommon::Errors::HttpError => e
-      flash[:error] += "HTTP Error: %s" % e
-    # API errors.
-    rescue DfpApi::Errors::ApiException => e
-      e.errors.each_with_index do |error, index|
-        flash[:error] += "\n" + "%s: %s" % [error[:trigger], error[:error_string]]
-      end
-    end    
-    
+	    <th>Actions</th>
+
+    if  to_create.blank? and to_update.blank?
+      flash[:info] = 'There is no data to be pushed to DFP.'
+      redirect_to :controller => @current_controller, :action => 'index' and return
+    else
+      begin
+        created = eval( 'dfp_service.create_' + type.pluralize + '(to_create)' ) unless to_create.blank?
+        updated = eval( 'dfp_service.update_' + type.pluralize + '(to_update)' ) unless to_update.blank?
+      # HTTP errors.
+      rescue AdsCommon::Errors::HttpError => e
+        flash[:error] += "HTTP Error: %s" % e
+      # API errors.
+      rescue DfpApi::Errors::ApiException => e
+        e.errors.each_with_index do |error, index|
+          flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
+        end
+      end    
+    end
     
     created.each do |cc|
       local = eval( type.classify + '.find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
@@ -144,11 +159,13 @@ class ApplicationController < ActionController::Base
     end    
     
     if created.size != 0
-      flash[:success] = created.size.to_s + @current_controller.capitalize + 'have been successfully created in server.'
+      flash[:success] = created.size.to_s + @current_controller.capitalize + ' have been successfully created in DFP.'
     end
     if updated.size != 0
-      flash[:warning] = updated.size.to_s + @current_controller.capitalize + 'have been successfully updated in server.'
+      flash[:notice] = updated.size.to_s + @current_controller.capitalize + ' have been successfully updated in DFP.'
     end
+    
+    redirect_to :controller => @current_controller, :action => 'index' and return
     
   end
   
@@ -161,8 +178,7 @@ class ApplicationController < ActionController::Base
        :password => session[:user][:password],
        :network_code => session[:user][:network]
         },
-     :service => { :environment => session[:user][:environment] } })
-     return dfp
+     :service => { :environment => session[:user][:environment] } })     
   end
   
   
@@ -177,7 +193,6 @@ class ApplicationController < ActionController::Base
     root_au = AdUnit.new(:name => session[:user][:network].to_s, 
                          :level => 0,
                          :dfp_id => effective_root_ad_unit_id )
-
     root_au.save
     return root_au
 	end	

@@ -1,25 +1,28 @@
 <%= render 'layouts/action_bar'%>
-<table class="zebra-striped bordered-table condensed-table">
+<table class="zebra-striped bordered-table super-condensed-table">
 	<thead>
 	  <tr>
-	    <th>Name</th>
-	    <th>Parent</th>
+	    <th>Level 1</th>
+	    <th>Level 2</th>
+	    <th>Level 3</th>
+	    <th>Level 4</th>
+	    <th>Level 5</th>		
 	    <th>Explicitly targeted</th>
-			<th>Synced?</th>
-	    <th></th>
-	    <th></th>
-	    <th></th>
+			<th>Synced to DFP?</th>
+	    <th>Actions</th>
+
 	  </tr>
 	</thead>
 <% @ad_units.each do |ad_unit| %>
   <tr>
-    <td><%= ad_unit.name %></td>
-    <td><%= ad_unit.parent.name unless ad_unit.parent.blank? %></td>
-    <td><%= ad_unit.explicitly_targeted %></td>
+		<% 5.times do |i|%>
+		<td><%= ad_unit.get_parent_of_level(i+1, 'name' ) %></td>
+		<% end %>
+    <td><%= ad_unit.explicitly_targeted ? "Yes" : "No" %></td>
 		<td><%= ad_unit.dfp_id.blank? ? "No" : "Yes"%>
-    <td><%= link_to 'Show', ad_unit %>
-    		<%= link_to 'Edit', edit_ad_unit_path(ad_unit) %>
-		    <%= link_to 'Destroy', ad_unit, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to 'Details', ad_unit %>
+    		<%#= link_to 'Edit', edit_ad_unit_path(ad_unit) %>
+		    <%#= link_to 'Delete', ad_unit, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>

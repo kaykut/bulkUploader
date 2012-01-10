@@ -7,6 +7,7 @@ class CreateAdUnits < ActiveRecord::Migration
       t.string :name
       t.string :description
       t.string :target_window
+      t.string :target_platform
       t.boolean :explicitly_targeted
       t.integer :level
       
