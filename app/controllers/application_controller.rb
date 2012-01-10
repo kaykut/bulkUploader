@@ -128,9 +128,6 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    
-	    <th>Actions</th>
-
     if  to_create.blank? and to_update.blank?
       flash[:info] = 'There is no data to be pushed to DFP.'
       redirect_to :controller => @current_controller, :action => 'index' and return

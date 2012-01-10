@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120108191614) do
+ActiveRecord::Schema.define(:version => 20120110103127) do
 
   create_table "ad_unit_sizes", :force => true do |t|
     t.integer  "height"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20120108191614) do
     t.string   "environment_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "network_id"
   end
 
   create_table "ad_unit_sizes_ad_units", :id => false, :force => true do |t|
@@ -40,6 +41,7 @@ ActiveRecord::Schema.define(:version => 20120108191614) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "synced_at"
+    t.integer  "network_id"
   end
 
   create_table "companies", :force => true do |t|
@@ -57,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20120108191614) do
     t.datetime "updated_at"
     t.string   "external_id"
     t.datetime "synced_at"
+    t.integer  "network_id"
   end
 
   create_table "companies_labels", :id => false, :force => true do |t|
@@ -72,6 +75,7 @@ ActiveRecord::Schema.define(:version => 20120108191614) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "synced_at"
+    t.integer  "network_id"
   end
 
   create_table "sessions", :force => true do |t|
