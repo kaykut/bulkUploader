@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120110103127) do
+ActiveRecord::Schema.define(:version => 20120112191230) do
 
   create_table "ad_unit_sizes", :force => true do |t|
     t.integer  "height"
@@ -28,6 +28,8 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.integer "ad_unit_size_id"
   end
 
+  add_index "ad_unit_sizes_ad_units", ["ad_unit_id"], :name => "index_ad_unit_sizes_ad_units_on_ad_unit_id"
+
   create_table "ad_units", :force => true do |t|
     t.string   "dfp_id"
     t.string   "parent_id_dfp"
@@ -43,6 +45,11 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.datetime "synced_at"
     t.integer  "network_id"
   end
+
+  add_index "ad_units", ["network_id", "parent_id_dfp"], :name => "index_ad_units_on_network_id_and_parent_id_dfp"
+  add_index "ad_units", ["network_id"], :name => "index_ad_units_on_network_id"
+  add_index "ad_units", ["parent_id_bulk", "name"], :name => "index_ad_units_on_parent_id_bulk_and_name"
+  add_index "ad_units", ["parent_id_bulk"], :name => "index_ad_units_on_parent_id_bulk"
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -62,6 +69,10 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.integer  "network_id"
   end
 
+  add_index "companies", ["network_id", "dfp_id"], :name => "index_companies_on_network_id_and_dfp_id"
+  add_index "companies", ["network_id", "name", "company_type"], :name => "index_companies_on_network_id_and_name_and_company_type", :unique => true
+  add_index "companies", ["network_id"], :name => "index_companies_on_network_id"
+
   create_table "companies_labels", :id => false, :force => true do |t|
     t.integer "company_id"
     t.integer "label_id"
@@ -77,6 +88,9 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.datetime "synced_at"
     t.integer  "network_id"
   end
+
+  add_index "labels", ["network_id", "name"], :name => "index_labels_on_network_id_and_name"
+  add_index "labels", ["network_id"], :name => "index_labels_on_network_id"
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
@@ -101,6 +115,8 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.datetime "updated_at"
     t.integer  "network_id"
   end
+
+  add_index "uploads", ["network_id"], :name => "index_uploads_on_network_id"
 
   create_table "users", :force => true do |t|
     t.string   "email"

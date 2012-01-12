@@ -17,8 +17,9 @@ class AdUnit < ActiveRecord::Base
   before_save :remove_trailing_spaces
 
   validates :name, :presence => true, 
-  :length => { :maximum => 100 }, 
-  :uniqueness => { :case_sensitive => false, :scope => :parent_id_bulk }
+                   :length => { :maximum => 100 }, 
+                   :uniqueness => { :case_sensitive => false, :scope => [:network_id, :parent_id_bulk] }
+ 
   validates :description, :length => {:maximum => 65535}
 
   validate :target_window_value_ok, :unless => :is_root_level?
