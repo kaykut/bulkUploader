@@ -2,7 +2,7 @@ class LabelsController < ApplicationController
   # GET /labels
   # GET /labels.json
   def index
-    @labels = Label.all
+    @labels = Label.nw(session[:nw]).all
     @labels.sort! do |a,b|
       a.name <=> b.name
     end

@@ -10,7 +10,8 @@ class AdUnitSize < ActiveRecord::Base
   has_and_belongs_to_many :ad_units
   validates :height, :numericality => {:greater_than => 0, :only_integer => true}
   validates :width, :numericality => {:greater_than => 0, :only_integer => true}
-  
+
+  scope :nw, lambda { |network_id| where( :network_id => network_id) }  
   
   def assign_aspect_ratio
     self.is_aspect_ratio = self.is_aspect_ratio || false

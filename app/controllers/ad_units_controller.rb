@@ -5,7 +5,7 @@ class AdUnitsController < ApplicationController
   # GET /ad_units.json
   def index
 
-    @ad_units = AdUnit.all
+    @ad_units = AdUnit.nw(session[:nw]).all
     root_au = get_root_ad_unit
     @ad_units.delete(root_au)
     @ad_units.sort! do |a,b|       
@@ -109,7 +109,7 @@ class AdUnitsController < ApplicationController
       to_update = []
       created = []
       updated = []
-      all_locals_level_i = AdUnit.find_all_by_level(i+1)
+      all_locals_level_i = AdUnit.nw(session[:nw]).find_all_by_level(i+1)
 
       break if all_locals_level_i.size == 0
 
@@ -137,7 +137,7 @@ class AdUnitsController < ApplicationController
 
       created.each do |cc|
         p = AdUnit.params_dfp2bulk(cc)
-        local = AdUnit.find_by_name_and_parent_id_dfp(p[:name], p[:parent_id])
+        local = AdUnit.nw(session[:nw]).find_by_name_and_parent_id_dfp(p[:name], p[:parent_id])
         if local
           local.dfp_id = p[:dfp_id]
           local.synced_at = Time.now
@@ -167,7 +167,7 @@ class AdUnitsController < ApplicationController
         au.level = 1
         au.parent_id_bulk = root_ad_unit.id
       else
-        parent = AdUnit.find_by_dfp_id(au.parent_id_dfp)
+        parent = AdUnit.nw(session[:nw]).find_by_dfp_id(au.parent_id_dfp)
         unless parent.blank?
           au.parent_id_bulk = parent.id
           parent = nil
@@ -176,7 +176,7 @@ class AdUnitsController < ApplicationController
       au.save(:validate => false)
     end
 
-    AdUnit.find_all_by_level(nil).each do |au|
+    AdUnit.nw(session[:nw]).find_all_by_level(nil).each do |au|
       au.level = au.get_level
       au.save(:validate => false)
     end
@@ -186,7 +186,7 @@ class AdUnitsController < ApplicationController
 
   def clear_all
     super
-    AdUnitSize.delete(AdUnitSize.all)
+    AdUnitSize.delete(AdUnitSize.nw(session[:nw]).all)
   end
 
 

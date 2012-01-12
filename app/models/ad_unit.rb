@@ -30,6 +30,8 @@ class AdUnit < ActiveRecord::Base
   TARGET_WINDOWS = ['TOP', 'BLANK']
   TARGET_PLATFORMS = ['WEB', 'MOBILE']
 
+  scope :nw, lambda { |network_id| where( :network_id => network_id) }
+
   def exists?
     AdUnit.find_by_parent_id_bulk_and_name( self.parent_id_bulk, self.name? ) ? true : false
   end
@@ -196,10 +198,11 @@ class AdUnit < ActiveRecord::Base
   end
 
   def already_exists(params)
-    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type( params[:height],
-    params[:width],
-    params[:is_aspect_ratio],
-    params[:environment_type] )
+    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type_and_network_id( params[:height],
+                                                                                                       params[:width],
+                                                                                                       params[:is_aspect_ratio],
+                                                                                                       params[:environment_type],
+                                                                                                       params[:network_id] )
     if aus 
       self.ad_unit_sizes << aus
       return true

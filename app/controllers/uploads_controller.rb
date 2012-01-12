@@ -4,7 +4,7 @@ class UploadsController < ApplicationController
   # GET /uploads.xml
 
   def index
-    @uploads = Upload.all
+    @uploads = Upload.nw(session[:nw]).all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -50,7 +50,7 @@ class UploadsController < ApplicationController
       redirect_to new_upload_path, :flash => { :error => "Please choose a file to upload." } and return
     end
 
-    @upload.save_temp
+    @upload.save_temp(session[:nw])
     if @upload.datatype == 'AdUnits'
       get_root_ad_unit
     end

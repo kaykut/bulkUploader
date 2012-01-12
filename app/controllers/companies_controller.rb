@@ -4,7 +4,7 @@ class CompaniesController < ApplicationController
   # GET /companies
   # GET /companies.json
   def index
-    @companies = Company.all
+    @companies = Company.nw(session[:nw]).all
     @companies.sort! do |a,b|
       a.name <=> b.name
     end
@@ -90,4 +90,13 @@ class CompaniesController < ApplicationController
     end
   end
 
+  def sync_to_dfp
+    if !Label.nw(session[:nw]).find_all_by_dfp_id(nil).blank?
+      flash[:error] = 'There are Labels that are not synced to DFP. Please sync those DFP before proceeding with syncing of Companies.'
+      redirect_to(companies_path)
+    else
+      super
+    end
+    
+  end
 end

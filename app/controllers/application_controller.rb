@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
       # API errors.
     rescue DfpApi::Errors::ApiException => e
       e.errors.each_with_index do |error, index|
-        flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
+        flash[:error] += "  |  " + "%s: %s" % [error[:trigger], error[:error_string]]
       end
     end    
 
@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
     result_page[:results].each do |result|
       result[:network_id] = session[:nw]
       cp = eval(type.classify + '.params_dfp2bulk(result)')
-      to_be_updated = eval( type.classify + '.find_by_dfp_id( cp[:dfp_id] )')
+      to_be_updated = eval( type.classify + '.nw(session[:nw]).find_by_dfp_id( cp[:dfp_id] )')
       if to_be_updated
         if type == 'ad_unit' and cp[:level] == 0
           no_update_needed_count += 1
@@ -124,7 +124,7 @@ class ApplicationController < ActionController::Base
     to_update = []
     created = []
     updated = []
-    all_locals = eval( type.classify + '.all' )
+    all_locals = eval( type.classify + '.nw(session[:nw]).all' )
 
     all_locals.each do |c|
       if c.dfp_id.blank?
@@ -134,8 +134,8 @@ class ApplicationController < ActionController::Base
         to_update << c.params_bulk2dfp(true)
       end
     end
-debugger
-    if  to_create.blank? and to_update.blank?
+
+    if to_create.blank? and to_update.blank?
       flash[:info] = 'There is no data to be pushed to DFP.'
       redirect_to :controller => @current_controller, :action => 'index' and return
     else
@@ -152,9 +152,9 @@ debugger
         end
       end    
     end
-debugger
+
     created.each do |cc|
-      local = eval( type.classify + '.find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
+      local = eval( type.classify + '.nw(session[:nw]).find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
       if local
         local.dfp_id = cc[:id]
         local.synced_at = Time.now
@@ -183,14 +183,14 @@ debugger
 
   def get_root_ad_unit
     
-    root_au = AdUnit.find_by_level(0)
+    root_au = AdUnit.nw(session[:nw]).find_by_level(0)
     return root_au if root_au
 
     dfp = get_dfp_instance 
     network_service = dfp.service(:NetworkService, API_VERSION)
     
     effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
-    root_au = AdUnit.new(:name => session[:user][:network_id].to_s, 
+    root_au = AdUnit.new(:name => session[:nw].to_s, 
                          :level => 0,
                          :dfp_id => effective_root_ad_unit_id,
                          :network_id => session[:nw])
@@ -199,9 +199,9 @@ debugger
   end	
 
   def clear_all
-    eval( @current_controller.classify + '.delete(' + @current_controller.classify + '.all)' )
+    eval( @current_controller.classify + '.delete(' + @current_controller.classify + '.nw(session[:nw]).all)' )
     if @current_controller == 'uploads'
-      Dir.glob(Rails.root.to_s + '/tmp/uploads/*.*').each do |file|
+      Dir.glob(Rails.root.to_s + '/tmp/uploads/' + session[:nw].to_s + '/*.*').each do |file|
         File.delete(file)
       end
     end

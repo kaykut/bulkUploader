@@ -13,12 +13,19 @@ class Upload < ActiveRecord::Base
   EXTENSION_TYPE_NOT_COMPATIBLE_MSG = 'Only CSV files are supported.'
 	ERROR_MARK_STRING = 'X'
 
+  scope :nw, lambda { |network_id| where( :network_id => network_id) }
 
 
 #Saves the uploaded file to tmp/uploads/[data_owner_id]
-  def save_temp
+  def save_temp(nw_id)
+    
 #the creation of uploads folder is necessary as tmp/ folder is not added to git. remove when in prod.
     uploads_folder = File.join( Rails.root.to_s, "/tmp/uploads/" )
+    unless File.exists?( uploads_folder ) && File.directory?( uploads_folder )
+      Dir.mkdir( uploads_folder )
+    end
+
+    uploads_folder += nw_id.to_s + '/'
     unless File.exists?( uploads_folder ) && File.directory?( uploads_folder )
       Dir.mkdir( uploads_folder )
     end
@@ -53,6 +60,7 @@ class Upload < ActiveRecord::Base
   end
 
   def import(nw_id)
+    
     self.status = 'Processing'
     self.save
 #initialize vars
@@ -61,6 +69,9 @@ class Upload < ActiveRecord::Base
     saved_data = []  #array to contain all objects to be inserted to DB in case no errors in csv file
     deleted_data = [] #array to contain all objects to be deleted from DB in case of no errors & overwrite
     params = {} #params hash that are extracted from the csv row
+    if !File.exists?(self.location) or !File.directory?(self.location)
+      Dir::mkdir(self.location)
+    end
     csv_file_out = self.location + add_to_filename( self.filename, "errors" ) #the new csv file to pass back to the user in case of errors
     csv_file_in = File.join( self.location, self.filename )
 

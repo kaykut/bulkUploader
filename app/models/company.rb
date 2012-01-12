@@ -24,6 +24,8 @@ class Company < ActiveRecord::Base
     
   before_save :remove_trailing_spaces
   before_save :assign_defaults
+
+  scope :nw, lambda { |network_id| where( :network_id => network_id) }
   
   def self.params_dfp2bulk(p)
     params = p.dup

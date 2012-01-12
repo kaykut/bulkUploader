@@ -6,6 +6,8 @@ class Label < ActiveRecord::Base
 	has_and_belongs_to_many :companies
 
   LABEL_TYPES = ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP']
+
+  scope :nw, lambda { |network_id| where( :network_id => network_id) }
   
   def self.params_dfp2bulk(p)
     params = p.dup
@@ -28,7 +30,7 @@ class Label < ActiveRecord::Base
 		params = {}
 		params[:name] = row[0]
 		params[:description] = row[1]
-		params[:label_type] = row[2].sub(' ','')
+		params[:label_type] = row[2].sub(' ','') unless row[2].nil?
 		params[:network_id] = nw_id
     return params
 	end
