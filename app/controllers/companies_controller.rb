@@ -5,6 +5,9 @@ class CompaniesController < ApplicationController
   # GET /companies.json
   def index
     @companies = Company.all
+    @companies.sort! do |a,b|
+      a.name <=> b.name
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -60,9 +63,10 @@ class CompaniesController < ApplicationController
   # PUT /companies/1.json
   def update
     @company = Company.find(params[:id])
-
     respond_to do |format|
+      
       @company.update_attributes(params[:company])
+      a=1
       if @company.save
         flash[:success] = 'Company was successfully updated.'
         format.html { redirect_to @company }

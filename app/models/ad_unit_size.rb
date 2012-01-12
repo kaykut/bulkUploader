@@ -31,6 +31,7 @@ class AdUnitSize < ActiveRecord::Base
   
   def self.params_dfp2bulk(p)
     params = {}
+    params[:network_id] = p[:network_id]
     params[:height] = p[:size][:height]
     params[:width] = p[:size][:width]
     params[:is_aspect_ratio] = p[:size][:is_aspect_ratio]

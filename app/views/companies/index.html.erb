@@ -25,8 +25,8 @@
 				<td><%= company.label_list%></td>
 		    <td><%= company.dfp_id.blank? ? "No" : "Yes" %></td>	
 		    <td><%= link_to 'Details', company %>
-		    		<%= link_to 'Edit', edit_company_path(company) %>
-		    		<%= link_to 'Delete', company, confirm: 'Are you sure?', method: :delete %></td>
+		    		<%#= link_to 'Edit', edit_company_path(company) %>
+		    		| <%= link_to 'Delete', company, confirm: 'Are you sure?', method: :delete %></td>
 		  </tr>
 		<% end %>
 	</tbody>

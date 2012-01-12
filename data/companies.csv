@@ -1,7 +1,7 @@
 name,company_type,address,email,fax_phone,primary_phone,external_id,comment,enable_same_advertiser_competitive_exclusion,labels
-channel,ADVERTISER,,,,,,,,,perfume;airlines
-iberia,ADVERTISER,,,,,,,,,airlines;perfume
-ajans,AGENCY,,,,,,,,,
-houseads,HOUSE_ADVERTISER,,,,,,,,,
-houseagc,HOUSE_AGENCY,,,,,,,,,
-adnw,AD_NETWORK,,,,,,,,,
+test_adv_api1,ADVERTISER,,,,,,,,,perfume;airlines
+test_adv_api2,ADVERTISER,,,,,,,,,airlines;perfume
+test_agc_api1,AGENCY,,,,,,,,,
+test_house_adv_api1,HOUSE_ADVERTISER,,,,,,,,,
+test_house_agc_api1,HOUSE_AGENCY,,,,,,,,,
+test_adnw_api1,AD_NETWORK,,,,,,,,,

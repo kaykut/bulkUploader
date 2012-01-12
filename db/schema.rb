@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(:version => 20120110103127) do
     t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "network_id"
   end
 
   create_table "users", :force => true do |t|

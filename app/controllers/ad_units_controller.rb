@@ -4,13 +4,14 @@ class AdUnitsController < ApplicationController
   # GET /ad_units
   # GET /ad_units.json
   def index
+
     @ad_units = AdUnit.all
     root_au = get_root_ad_unit
     @ad_units.delete(root_au)
     @ad_units.sort! do |a,b|       
-      a.top_parent_name <=> b.top_parent_name 
+      a.get_parent_of_level(1,'name') <=> b.get_parent_of_level(1,'name') 
     end
-
+    
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @ad_units }
@@ -87,93 +88,77 @@ class AdUnitsController < ApplicationController
       format.json { head :ok }
     end
   end
-  
+
   def sync_to_dfp
-      
-      flash[:error] = ''
 
-      dfp = get_dfp_instance
+    flash[:error] = ''
 
-      # Get the Service.
-      dfp_service = dfp.service(:InventoryService, API_VERSION)
+    dfp = get_dfp_instance
 
-      # Define initial values.
-      limit = 9999
-      statement = {:query => "LIMIT %d" % limit}
-      all_created = []
-      all_updated = []
+    # Get the Service.
+    dfp_service = dfp.service(:InventoryService, API_VERSION)
 
-      5.times do |i|
-        to_create = []
-        to_update = []
-        created = []
-        updated = []
-        all_locals_level_i = AdUnit.find_all_by_level(i+1)
-        
-        break if all_locals_level_i.size == 0
-        
-        all_locals_level_i.each do |c|
-          if c.dfp_id.blank?
-            to_create << c.params_bulk2dfp
-          elsif c.synced_at || c.created_at < c.updated_at
-            to_update << c.params_bulk2dfp(true)
-          end
+    # Define initial values.
+    limit = 9999
+    statement = {:query => "LIMIT %d" % limit}
+    all_created = []
+    all_updated = []
+
+    5.times do |i|
+      to_create = []
+      to_update = []
+      created = []
+      updated = []
+      all_locals_level_i = AdUnit.find_all_by_level(i+1)
+
+      break if all_locals_level_i.size == 0
+
+      all_locals_level_i.each do |c|
+        if c.dfp_id.blank?
+          to_create << c.params_bulk2dfp
+        elsif c.synced_at || c.created_at < c.updated_at
+          to_update << c.params_bulk2dfp(true)
         end
+      end
 
-        begin
-          created = dfp_service.create_ad_units(to_create) unless to_create.blank?
-          updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
+      begin
+        created = dfp_service.create_ad_units(to_create) unless to_create.blank?
+        updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
         # HTTP errors.
-        rescue AdsCommon::Errors::HttpError => e
-          flash[:error] += "HTTP Error: %s" % e
+      rescue AdsCommon::Errors::HttpError => e
+        flash[:error] += "HTTP Error: %s" % e
         # API errors.
-        rescue DfpApi::Errors::ApiException => e
-          e.errors.each_with_index do |error, index|
-            flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
-          end
-        end    
-
-
-        created.each do |cc|
-          p = AdUnit.params_dfp2bulk(cc)
-          local = AdUnit.find_by_name_and_parent_id_dfp(p[:name], p[:parent_id])
-          if local
-            local.dfp_id = p[:dfp_id]
-            local.synced_at = Time.now
-            local.save
-          end
+      rescue DfpApi::Errors::ApiException => e
+        e.errors.each_with_index do |error, index|
+          flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
         end
-        all_created.concat(created)    
+      end    
+
+
+      created.each do |cc|
+        p = AdUnit.params_dfp2bulk(cc)
+        local = AdUnit.find_by_name_and_parent_id_dfp(p[:name], p[:parent_id])
+        if local
+          local.dfp_id = p[:dfp_id]
+          local.synced_at = Time.now
+          local.save
+        end
       end
-      if all_created.size != 0
-        flash[:success] = all_created.size.to_s + ' AdUnits have been successfully created in DFP.'
-      end
-      if all_updated.size != 0
-        flash[:notice] = all_updated.size.to_s + ' AdUnits have been successfully updated in DFP.'
-      end
-      if all_created.size == 0 and all_updated.size == 0
-        flash[:info] = 'There is no data to be pushed to DFP.'
-      end
-      
-      redirect_to :controller => @current_controller, :action => 'index'     
+      all_created.concat(created)    
+    end
+    if all_created.size != 0
+      flash[:success] = all_created.size.to_s + ' AdUnits have been successfully created in DFP.'
+    end
+    if all_updated.size != 0
+      flash[:notice] = all_updated.size.to_s + ' AdUnits have been successfully updated in DFP.'
+    end
+    if all_created.size == 0 and all_updated.size == 0
+      flash[:info] = 'There is no data to be pushed to DFP.'
     end
 
-    def get_dfp_instance
-      dfp = DfpApi::Api.new({
-         :authentication => {
-         :method => 'ClientLogin',
-         :application_name => 'bulkUploader',
-         :email => session[:user][:email],
-         :password => session[:user][:password],
-         :network_code => session[:user][:network]
-          },
-       :service => { :environment => session[:user][:environment] } })
-       return dfp
-    
     redirect_to :controller => @current_controller, :action => 'index'     
-    
   end
-  
+
   def sync_from_dfp
     parent_updates = super
     root_ad_unit = get_root_ad_unit
@@ -190,21 +175,19 @@ class AdUnitsController < ApplicationController
       end
       au.save(:validate => false)
     end
-    
-    
+
     AdUnit.find_all_by_level(nil).each do |au|
       au.level = au.get_level
       au.save(:validate => false)
     end
-    
     redirect_to :controller => @current_controller, :action => 'index'     
-    
+
   end
-  
+
   def clear_all
     super
     AdUnitSize.delete(AdUnitSize.all)
   end
-  
-	
+
+
 end

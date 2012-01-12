@@ -20,9 +20,9 @@
 		<% end %>
     <td><%= ad_unit.explicitly_targeted ? "Yes" : "No" %></td>
 		<td><%= ad_unit.dfp_id.blank? ? "No" : "Yes"%>
-    <td><%= link_to 'Details', ad_unit %>
-    		<%#= link_to 'Edit', edit_ad_unit_path(ad_unit) %>
-		    <%#= link_to 'Delete', ad_unit, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to 'Details', ad_unit %> |
+    		<%#= link_to 'Edit', edit_ad_unit_path(ad_unit) %> 
+		    <%= link_to 'Delete', ad_unit, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>

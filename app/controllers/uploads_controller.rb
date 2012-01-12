@@ -54,7 +54,7 @@ class UploadsController < ApplicationController
     if @upload.datatype == 'AdUnits'
       get_root_ad_unit
     end
-    number_saved = @upload.import
+    number_saved = @upload.import(session[:nw])
 #    @upload.delay.import
 
     @upload.save
@@ -62,7 +62,7 @@ class UploadsController < ApplicationController
     respond_to do |format|
       unless @upload.status == "Erroneous"
         flash[:success] = "File uploaded & imported successfully. #{number_saved.to_s + ' ' + @upload.datatype.pluralize} have been created."
-        format.html { redirect_to(uploads_url) }
+        format.html { redirect_to :controller => @upload.datatype.tableize, :action => 'index' }
         format.xml  { render :xml => @upload, :status => :created, :location => @upload }
       else
         flash[:error] = 'Import Unsuccesful. Download file to see errors.'

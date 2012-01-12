@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     if request.post?
       session[:user] = {}
       session[:user][:email] = params[:user][:email] 
-      session[:user][:network] = params[:user][:network].to_i
+      session[:nw] = session[:user][:network_id] = params[:user][:network_id].to_i
       session[:user][:password] = params[:user][:password]
       session[:user][:environment] = params[:user][:environment]
       redirect_to(:controller => "uploads", :action => "index")

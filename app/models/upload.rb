@@ -52,7 +52,7 @@ class Upload < ActiveRecord::Base
     self.save
   end
 
-  def import
+  def import(nw_id)
     self.status = 'Processing'
     self.save
 #initialize vars
@@ -81,8 +81,8 @@ class Upload < ActiveRecord::Base
         	next
         end
         row_out = []
-
-        params = eval(data_class + '.row_to_params( row_in )')
+  
+        params = eval(data_class + '.row_to_params( row_in, nw_id )')
         # dummy_data = nil
         dummy_data = eval(data_class + '.new( params )')
 
@@ -101,7 +101,6 @@ class Upload < ActiveRecord::Base
               row_out << DATA_EXISTS_ERROR_MSG #exists contain error msg if exists, false if not.
             end
           else #does not already exist
-            1+'a'
             dummy_data.save
             saved_data << dummy_data
           end

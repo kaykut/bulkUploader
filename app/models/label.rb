@@ -8,11 +8,10 @@ class Label < ActiveRecord::Base
   LABEL_TYPES = ['COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP']
   
   def self.params_dfp2bulk(p)
-    params = {}
-    params[:name] = p[:name]
-    params[:description] = p[:description]
-    params[:label_type] = p[:type]
-    params[:dfp_id] = p[:id].to_s
+    params = p.dup
+    params[:label_type] = params.delete(:type)
+    params[:dfp_id] = params.delete(:id).to_s
+    params.delete(:is_active)
     return params
   end
   
@@ -25,11 +24,12 @@ class Label < ActiveRecord::Base
     return params
   end
 
-	def self.row_to_params(row)
+	def self.row_to_params(row, nw_id)
 		params = {}
 		params[:name] = row[0]
 		params[:description] = row[1]
 		params[:label_type] = row[2].sub(' ','')
+		params[:network_id] = nw_id
     return params
 	end
 

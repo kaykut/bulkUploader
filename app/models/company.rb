@@ -23,6 +23,7 @@ class Company < ActiveRecord::Base
 	accepts_nested_attributes_for :labels, :reject_if => :not_already_exists
     
   before_save :remove_trailing_spaces
+  before_save :assign_defaults
   
   def self.params_dfp2bulk(p)
     params = p.dup
@@ -59,7 +60,7 @@ class Company < ActiveRecord::Base
     return params
   end
 
-	def self.row_to_params(row)
+	def self.row_to_params(row, nw_id)
 	  
     return nil if row.blank?
     
@@ -75,6 +76,7 @@ class Company < ActiveRecord::Base
 		params[:comment] = row[7]
 		params[:enable_same_advertiser_competitive_exclusion] = row[8] || false
 		params[:credit_status] = row[9]
+		params[:network_id]
  
     return params if row[10].blank?
 		params[:labels_attributes] = []    
@@ -96,15 +98,17 @@ class Company < ActiveRecord::Base
     return '' if self.labels.blank?
     ll = ''
     self.labels.each_with_index do |l, i|
-        ll += l.name + ', '
+        ll += l.name + '; '
     end
     return ll.chop!.chop!
   end
   
   def label_list=(llist)
     return if llist.blank?
+    
     CSV.parse_line(llist, :col_sep => ';').each do |label_name|
-      self.labels << Label.find_or_initialize_by_name_and_label_type(label_name, 'COMPETITIVE_EXCLUSION')
+      l = Label.find_or_initialize_by_name_and_label_type(label_name, 'COMPETITIVE_EXCLUSION')
+      self.labels << l unless self.labels.include?(l)
     end
   end
   
@@ -136,6 +140,10 @@ class Company < ActiveRecord::Base
   def remove_trailing_spaces
     self.name.chop! while self.name.last == ' '
     self.name.reverse!.chop!.reverse! while self.name.first == ' '
+  end
+  
+  def assign_defaults
+    self.credit_status = 'ACTIVE' if self.credit_status.blank?
   end
   
 end

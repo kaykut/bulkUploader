@@ -3,6 +3,10 @@ class LabelsController < ApplicationController
   # GET /labels.json
   def index
     @labels = Label.all
+    @labels.sort! do |a,b|
+      a.name <=> b.name
+    end
+    
 
     respond_to do |format|
       format.html # index.html.erb

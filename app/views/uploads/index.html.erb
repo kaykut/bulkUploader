@@ -21,7 +21,7 @@
 		    <td><%= upload.status %></td>
 		    <td><%= link_to 'Delete', upload, :confirm => 'Are you sure?', :method => :delete %>
 				<% if upload.status == 'Erroneous' %>
-		      <%= link_to 'Download Errors', { :controller => 'uploads', 
+		      | <%= link_to 'Download Errors', { :controller => 'uploads', 
 		                                   :action => 'download', 
 		                                   :id => upload } %>
 		    <% end %></td>
