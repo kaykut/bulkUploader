@@ -90,7 +90,8 @@ class AdUnitsController < ApplicationController
   end
 
   def sync_to_dfp
-
+    begin
+      
     flash[:error] = ''
 
     dfp = get_dfp_instance
@@ -157,9 +158,17 @@ class AdUnitsController < ApplicationController
     end
 
     redirect_to :controller => @current_controller, :action => 'index'     
+    
+    rescue
+      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'  
+      redirect_to :controller => 'error', :action => 'index'
+    end
   end
 
   def sync_from_dfp
+
+    begin
+      
     parent_updates = super
     root_ad_unit = get_root_ad_unit
     parent_updates.each do |au|
@@ -181,7 +190,12 @@ class AdUnitsController < ApplicationController
       au.save(:validate => false)
     end
     redirect_to :controller => @current_controller, :action => 'index'     
-
+    
+    rescue Exception => e
+      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
+      redirect_to :controller => 'error', :action => 'index'
+    end
+    
   end
 
   def clear_all

@@ -7,6 +7,12 @@
       <li><%= link_to "Uploads", {:controller => 'uploads', :action => 'index'} %></li>
     <%end%>
 
+    <% if @current_controller == "ad_units" %>
+      <li class='active'><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
+    <%end%>
+
     <% if @current_controller == "labels" %>
       <li class='active'><%= link_to "Labels", {:controller => 'labels', :action => 'index'} %></li>
     <%else%>
@@ -17,12 +23,6 @@
       <li class='active'><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
     <%else%>
       <li><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
-    <%end%>
-
-    <% if @current_controller == "ad_units" %>
-      <li class='active'><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
-    <%else%>
-      <li><%= link_to "Ad Units", {:controller => 'ad_units', :action => 'index'} %></li>
     <%end%>
 
 		<% sd = session[:user].nil? ? 'NONE' : session[:user][:email] + ' - ' + session[:user][:network_id].to_s %>

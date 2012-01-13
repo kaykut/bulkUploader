@@ -46,4 +46,4 @@ gem 'validates_email_format_of'
 gem 'twitter_bootstrap_form_for'
 gem 'jquery-rails'
 gem 'client_side_validations'
-	
+gem 'mysql'

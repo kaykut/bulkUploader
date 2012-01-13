@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
   end
 
   def sync_from_dfp
+    begin
 
     # Define initial values.
     result_page = {}
@@ -101,10 +102,17 @@ class ApplicationController < ActionController::Base
     else
       redirect_to :controller => @current_controller, :action => 'index'     
     end
-
+    
+    rescue Exception => e
+      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
+      redirect_to :controller => 'error', :action => 'index'
+    end
+    
   end
 
   def sync_to_dfp 
+    begin    
+    
     flash[:error] = ''
 
     type = @current_controller.singularize
@@ -166,6 +174,11 @@ class ApplicationController < ActionController::Base
     flash[:notice] = updated.size.to_s + ' ' + @current_controller.capitalize + ' have been successfully updated in DFP.' if updated.size != 0
 
     redirect_to :controller => @current_controller, :action => 'index' and return
+    
+    rescue Exception => e
+      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
+      redirect_to :controller => 'error', :action => 'index'
+    end
 
   end
 
@@ -199,6 +212,8 @@ class ApplicationController < ActionController::Base
   end	
 
   def clear_all
+    begin 
+      
     eval( @current_controller.classify + '.delete(' + @current_controller.classify + '.nw(session[:nw]).all)' )
     if @current_controller == 'uploads'
       Dir.glob(Rails.root.to_s + '/tmp/uploads/' + session[:nw].to_s + '/*.*').each do |file|
@@ -206,6 +221,11 @@ class ApplicationController < ActionController::Base
       end
     end
     redirect_to :controller => @current_controller, :action => 'index'
+    
+    rescue Exception => e
+      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
+      redirect_to :controller => 'error', :action => 'index'
+    end
   end
 
   protected
