@@ -1,7 +1,7 @@
 <%= twitter_bootstrap_form_for :user do |f| %>
 	<%= f.inputs do %>
 		<%= f.text_field :email, :size => 50, :placeholder => 'Your dfp API account email' %>
-	  <%= f.text_field :password, :size => 50, :placeholder => 'We do NOT encrypt or save your password.' %>
+	  <%= f.text_field :password, :columns => 50, :placeholder => 'We do NOT encrypt or save your password.' %>
 		<%= f.text_field :network_id, :size => 10 %>
     <%= f.select 'environment', 'Environment',
 							 ['SANDBOX', 'PRODUCTION'],

@@ -1,0 +1,83 @@
+<p>Welcome to <b>Ditto</b>'s Ruby on Rails application version. This development is a joint effort of Kaya Aykut (<a href='mailto:kaya@google.com'>kaya@google.com</a>) and Felipe Plata (<a href='mailto:feli@google.com'>feli@google.com</a>). Special thanks to our manager Pascal Mitride for supporting us throughout the development process.</p>
+
+<p>The main objective of this tool is to facilitate the mass creation of Master Data in DFP Premium networks and save time for both consultants and clients, mainly in new biz implementations, or clients migrating to fresh networks.</p>
+
+<p>
+	<h4>What can this thing do?</h4>
+	This application allows you to:
+	<ul>
+		<li>Download all the elements of certain Master Data types (e.g. Company, Ad Unit, Label) from DFP Premium to the local database.</li>
+		<li>Upload & Import Master Data to DFP Premium through a .csv file.</li>
+	</ul>
+</p>
+
+<p>
+	<h4>Why is there a download option?</h4>
+		In case the tool is used on DFP networks with existing Master Data, it is necessary to validate the new data against the data in the network. As validations occur in the local DB (before the actual sync to DFP), it is necessary to sync the data from DFP to local, in order for the validations to work effectively.<br/><br/>
+		In the future, we're planning to add the functionality to export the data on DB to a .csv, in case you or your client needs a xls list of the companies or ad units etc. on their network.
+</p>
+
+<p>
+	<h4>How do you validate the data?</h4>
+	All data that is uploaded is validated 
+	<ul>
+		<li>according to <a href='http://code.google.com/apis/dfp/'> DFP API specifications</a> for each object type.</li>
+		<li>against other instances of the same type that exists in the local DB, for name uniqueness rules etc.</li>
+	</ul>
+</p>
+
+<p>
+	<h4>What happens if my csv files has erroneous data?</h4>
+	In this case, your upload will have a <a href=''>download errors</a> link next to it. The lines with errors will be marked with a 'X' and contain the error message(s) added to last 2 columns. You can import the csv on an Excel, filter the erroneous lines, and correct them with the help of te error messages. Do no hesitate to contact us if you can't figure out why you get a particular error.
+</p>
+
+<p>
+	<h4>What do you do with the email & password I provide?</h4>
+	The email & password you provide are not encrypted (not through transmission, nor in the session data) and exposed in the logs. We therefore <b>strongly recommend</b> that you create a dummy user in the network where you will be uploading the data, specific for this task, and <b>deactivate that user</b> once your uploading is complete. As you already know, you <b>MUST NOT</b> provide your Google ldap and password for this kind of operation. 
+</p>
+
+<p>
+	<h4>Can many consultants with multiple networks work with the tool at the same time?</h4>
+	Yes, although with some caveats: 
+	<ul>
+		<li>The application is deployed on a Ubiquity machine with no uptime guarantee.</li>
+		<li>It runs on a very rudimentary server (WEBrick) and database (SQLite).</li>
+		<li>The server can only process 1 HTTP request at a given time.</li>
+	</ul>
+	Given these points, we request that the users of the tool mark their usage dates on <a href=''>this trix</a>, so that potential users can see how many people are simultaneously using the tool. 
+</p>
+
+<p>
+	<h4>Is there a .csv template for uploads?</h4>
+	Yes, you can download a .zip bundle of examplary .csv's <a href=''>here</a>. The file is also linked on the <%= link_to 'Uploads', uploads_path %> tab
+</p>
+
+<p>
+	<h4What else should I pay attention to while uploading?</p> 
+	There are several points that are critical for successful uploads & syncs:
+	<ul>
+		<li>Labels always need to be uploaded & downloaded before Companies, as otherwise Companies might not correctly reflect  the corresponding label assignments.</li>
+		<li>In the Ad Unit upload, you need to make sure that the parent of an AdUnit is always on a previous line than the child. e.g. If you have an top level Ad Unit 'Reviews', and its child 'PhoneReviews', 'Reviews' should preceed 'PhoneReviews' in the csv file.</li>
+		<li>You have the options of "overwriting existing data" while uploading. This will NOT overwrite data in DFP, but in the local DB. Use it carefully.</li>
+		<li>Use the 'The file has a header row.' option carefully as well. Checking that box for a file without header will cause skipping the 1st line (=> errors), and vice versa will try to create a data from the header (=> errors). </li>
+	</ul>
+</p>
+
+<p>
+	<h4>What are you planning to develop next? Do you accept feature requests?<h4>
+		<p>In the coming weeks we will extend the functionality to Custom Targeting criteria, Orders and Line Items (although the last 2 will rather be Order & LI shells, without the support for targeting criteria or delivery options). After that, any suggestions are very welcome.</p>
+		<p>Please keep in mind that we are just another 2 busy consultants in the middle of Tier 0 client upgrades, so don't be mad at us if we slightly underdeliver. :-)</p>
+</p>
+
+<p>
+	<h4>I wanna get involved!!!</h4>
+	You're <b>SO</b> welcome to contribute. Basically you can:
+	<ul>
+		<li>Download the code from <a href='https://github.com/kaykut/bulkUploader'>github</a> and start working on it by yourself. Port it the way you want :-)</li>
+		<li>Get in touch with us to see if we have a pipeline of features waiting for development.</li>
+	</ul>
+</p>
+
+<p><h4>Happy BulkUploading!!!</h4></p>
+
+<br/><br/><br/><br/><br/>

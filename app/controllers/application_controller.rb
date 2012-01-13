@@ -105,7 +105,7 @@ class ApplicationController < ActionController::Base
     
     rescue Exception => e
       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-      redirect_to :controller => 'error', :action => 'index'
+      redirect_to :controller => 'whatelse', :action => 'error'
     end
     
   end
@@ -177,7 +177,7 @@ class ApplicationController < ActionController::Base
     
     rescue Exception => e
       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-      redirect_to :controller => 'error', :action => 'index'
+      redirect_to :controller => 'whatelse', :action => 'error'
     end
 
   end
@@ -224,7 +224,7 @@ class ApplicationController < ActionController::Base
     
     rescue Exception => e
       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-      redirect_to :controller => 'error', :action => 'index'
+      redirect_to :controller => 'whatelse', :action => 'error'
     end
   end
 

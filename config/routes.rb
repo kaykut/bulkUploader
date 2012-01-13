@@ -3,6 +3,11 @@ BulkUploader::Application.routes.draw do
   get 'users/login'
   post 'users/login'
   
+  get 'whatelse/get_started'
+  get 'whatelse/error'
+  
+  get 'orders/index'
+  get 'line_items/index'
   
   get 'companies/sync_from_dfp'
   get 'companies/sync_to_dfp'
@@ -22,16 +27,10 @@ BulkUploader::Application.routes.draw do
   get 'uploads/clear_all'
   resources :uploads do
     get 'download', :on => :member
-#    get 'import', :on => :member
   end
   resources :uploads
-  
-
-    # 
-    # post "companies/sync_from_dfp"
-    # get "companies/sync_from_dfp"
-  
-  root :to => 'uploads#index'
+    
+  root :to => 'whatelse#get_started'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

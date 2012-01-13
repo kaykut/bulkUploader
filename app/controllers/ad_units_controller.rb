@@ -159,9 +159,9 @@ class AdUnitsController < ApplicationController
 
     redirect_to :controller => @current_controller, :action => 'index'     
     
-    rescue
-      flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'  
-      redirect_to :controller => 'error', :action => 'index'
+      rescue
+      flash[:error] = 'Ooops... This is not really what we expected. You can shoot an email to kaya@google.com with thedetails.'  
+      redirect_to :controller => 'whatelse', :action => 'error'
     end
   end
 
@@ -193,7 +193,7 @@ class AdUnitsController < ApplicationController
     
     rescue Exception => e
       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-      redirect_to :controller => 'error', :action => 'index'
+      redirect_to :controller => 'whatelse', :action => 'error'
     end
     
   end

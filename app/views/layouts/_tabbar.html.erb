@@ -1,6 +1,11 @@
 <div>
   <ul class="tabs">
-
+    <% if @current_controller == "whatelse" and @current_action != 'error' %>
+      <li class='active'><%= link_to "Getting Started", {:controller => 'whatelse', :action => 'get_started'} %></li>
+    <%else%>
+      <li><%= link_to "Getting Started", {:controller => 'whatelse', :action => 'get_started'} %></li>
+    <%end%>
+		
     <% if @current_controller == "uploads" %>
       <li class='active'><%= link_to "Uploads", {:controller => 'uploads', :action => 'index'} %></li>
     <%else%>
@@ -23,6 +28,18 @@
       <li class='active'><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
     <%else%>
       <li><%= link_to "Companies", {:controller => 'companies', :action => 'index'} %></li>
+    <%end%>
+
+    <% if @current_controller == "line_items" %>
+      <li class='active'><%= link_to "Line Items", {:controller => 'line_items', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Line Items", {:controller => 'line_items', :action => 'index'} %></li>
+    <%end%>
+
+    <% if @current_controller == "orders" %>
+      <li class='active'><%= link_to "Orders", {:controller => 'orders', :action => 'index'} %></li>
+    <%else%>
+      <li><%= link_to "Orders", {:controller => 'orders', :action => 'index'} %></li>
     <%end%>
 
 		<% sd = session[:user].nil? ? 'NONE' : session[:user][:email] + ' - ' + session[:user][:network_id].to_s %>
