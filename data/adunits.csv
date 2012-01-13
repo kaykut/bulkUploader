@@ -1,4 +1,1 @@
-BUtest3_1stlevel,,,,,728x90;120x600;300x250,BLANK,false,WEB,
-BUtest3_1stlevel,BU_test_2ndlevel_1,,,,728x90;120x600;300x250,BLANK,false,WEB,
-BUtest3_1stlevel_2,,,,,728x90;120x600;300x250,BLANK,false,MOBILE,
-BUtest3_1stlevel_2,BU_test_2ndlevel_1,,,,728x90;120x600;300x250,BLANK,false,MOBILE,
+Top Level AU Name, 2nd Level AU Name, 3rd Level AU Name, 4th Level AU Name, 5th Level AU Name, Ad Unit Sizes, Target Window, Explicitly Targeted, Target Platform, Description 

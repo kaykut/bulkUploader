@@ -1,6 +1,6 @@
-<p>Welcome to <b>Ditto</b>'s Ruby on Rails application version. This development is a joint effort of Kaya Aykut (<a href='mailto:kaya@google.com'>kaya@google.com</a>) and Felipe Plata (<a href='mailto:feli@google.com'>feli@google.com</a>). Special thanks to our manager Pascal Mitride for supporting us throughout the development process.</p>
+<p>Welcome to <b>Ditto</b>'s Ruby on Rails application version. This development is a joint effort of Kaya Aykut (<a href='mailto:kaya@google.com'>kaya@google.com</a>) and Felipe Plata (<a href='mailto:feli@google.com'>feli@google.com</a>). Special thanks to our manager <a href='mailto:pmitride@google.com'>Pascal Mitride</a> for supporting us throughout the development process.</p>
 
-<p>The main objective of this tool is to facilitate the mass creation of Master Data in DFP Premium networks and save time for both consultants and clients, mainly in new biz implementations, or clients migrating to fresh networks.</p>
+<p>The main objective of this tool is to facilitate the mass creation of Master Data in DFP Premium networks and save time for both consultants and clients, mainly in new biz implementations, or clients migrating to fresh networks. <b>PLEASE READ THE ENTIRETY OF THIS PAGE IF YOU'RE GOING TO USE THE TOOL.</b></p>
 
 <p>
 	<h4>What can this thing do?</h4>
@@ -9,6 +9,11 @@
 		<li>Download all the elements of certain Master Data types (e.g. Company, Ad Unit, Label) from DFP Premium to the local database.</li>
 		<li>Upload & Import Master Data to DFP Premium through a .csv file.</li>
 	</ul>
+</p>
+
+<p>
+	<h4>How do I start?</h4>
+	<p>Start by providing Login Data. The login data is not authenticated with DFP until you start down/uploading data, so feel free to provide 'qwerty@asdf.com' to get around the tool and explore.</p>
 </p>
 
 <p>
@@ -28,38 +33,50 @@
 
 <p>
 	<h4>What happens if my csv files has erroneous data?</h4>
-	In this case, your upload will have a <a href=''>download errors</a> link next to it. The lines with errors will be marked with a 'X' and contain the error message(s) added to last 2 columns. You can import the csv on an Excel, filter the erroneous lines, and correct them with the help of te error messages. Do no hesitate to contact us if you can't figure out why you get a particular error.
+	In this case, your upload will have a <a href>download errors</a> link next to it. The lines with errors will be added 2 columns: 1st column containing an 'X' and the 2nd containing the error message(s) added to last 2 columns. You can then import the csv on an Excel, filter the erroneous lines with the column before last, and correct them with the help of te error messages. Do no hesitate to contact us if you can't figure out why you get a particular error.
 </p>
 
 <p>
-	<h4>What do you do with the email & password I provide?</h4>
+	<h4>What do you do with the email & password I provide?  <span class="label important">Important</span></h4>
 	The email & password you provide are not encrypted (not through transmission, nor in the session data) and exposed in the logs. We therefore <b>strongly recommend</b> that you create a dummy user in the network where you will be uploading the data, specific for this task, and <b>deactivate that user</b> once your uploading is complete. As you already know, you <b>MUST NOT</b> provide your Google ldap and password for this kind of operation. 
 </p>
 
 <p>
-	<h4>Can many consultants with multiple networks work with the tool at the same time?</h4>
+	<h4>Can many consultants with multiple networks work with the tool at the same time?  <span class="label important">Important</span></h4>
 	Yes, although with some caveats: 
 	<ul>
 		<li>The application is deployed on a Ubiquity machine with no uptime guarantee.</li>
 		<li>It runs on a very rudimentary server (WEBrick) and database (SQLite).</li>
-		<li>The server can only process 1 HTTP request at a given time.</li>
+		<li>The server can only process 1 HTTP request at a time.</li>
 	</ul>
 	Given these points, we request that the users of the tool mark their usage dates on <a href=''>this trix</a>, so that potential users can see how many people are simultaneously using the tool. 
 </p>
 
 <p>
-	<h4>Is there a .csv template for uploads?</h4>
-	Yes, you can download a .zip bundle of examplary .csv's <a href=''>here</a>. The file is also linked on the <%= link_to 'Uploads', uploads_path %> tab
+	<h4>Is there a .csv template for uploads? What should I pay attention to while uploading?  <span class="label important">Important</span></h4>
+	Yes, you can download a .zip bundle of examplary .csv's <%=link_to 'here', 'whatelse/download' %></a>.
 </p>
 
 <p>
 	<h4What else should I pay attention to while uploading?</p> 
-	There are several points that are critical for successful uploads & syncs:
+	There are several points that need to be taken into account for successful uploads & syncs:
 	<ul>
+		<li>The column separator is ','. For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. </li>
+		<li>The starting and trailing spaces in names are ignored.</li>
+		<li>For boolean attributes of entities, use values 'true' or 'false'.</li>
 		<li>Labels always need to be uploaded & downloaded before Companies, as otherwise Companies might not correctly reflect  the corresponding label assignments.</li>
+		<li>In the Ad Unit upload .csv file, you need to precise the entire hierarchy of the parents for Ad Units of any level. i.e. for an Ad Unit of level 4, the first 4 columns of the .csv need to have values.</li>
 		<li>In the Ad Unit upload, you need to make sure that the parent of an AdUnit is always on a previous line than the child. e.g. If you have an top level Ad Unit 'Reviews', and its child 'PhoneReviews', 'Reviews' should preceed 'PhoneReviews' in the csv file.</li>
 		<li>You have the options of "overwriting existing data" while uploading. This will NOT overwrite data in DFP, but in the local DB. Use it carefully.</li>
 		<li>Use the 'The file has a header row.' option carefully as well. Checking that box for a file without header will cause skipping the 1st line (=> errors), and vice versa will try to create a data from the header (=> errors). </li>
+		<li>Here's a list of some restricted values:'
+			<ul>
+				<li>AdUnit  - Target Windows:		 'TOP', 'BLANK'</li>
+				<li>AdUnit  - Target Platforms:  'WEB', 'MOBILE'</li>
+				<li>Company - Types: 						 'ADVERTISER', 'AGENCY', 'HOUSE_ADVERTISER', 'HOUSE_AGENCY', 'AD_NETWORK'</li>
+				<li>Company - Credit Status: 		 'ACTIVE','ON_HOLD', 'CREDIT_STOP', 'INACTIVE', 'BLOCKED'</li>
+				<li>Label   - Types: 						 'COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP'</li>
+				</ul></li>
 	</ul>
 </p>
 
@@ -78,6 +95,6 @@
 	</ul>
 </p>
 
-<p><h4>Happy BulkUploading!!!</h4></p>
+<p><h4>Happy Ditto'ing!!!</h4></p>
 
 <br/><br/><br/><br/><br/>

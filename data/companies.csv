@@ -1,7 +1,1 @@
-name,company_type,address,email,fax_phone,primary_phone,external_id,comment,enable_same_advertiser_competitive_exclusion,labels
-test_adv_api1,ADVERTISER,,,,,,,,,perfume;airlines
-test_adv_api2,ADVERTISER,,,,,,,,,airlines;perfume
-test_agc_api1,AGENCY,,,,,,,,,
-test_house_adv_api1,HOUSE_ADVERTISER,,,,,,,,,
-test_house_agc_api1,HOUSE_AGENCY,,,,,,,,,
-test_adnw_api1,AD_NETWORK,,,,,,,,,
+Name,Company Type, Address, Email, Fax Phone, Primary Phone, External ID, Comment, enable_same_advertiser_competitive_exclusion, Credit Status, Labels

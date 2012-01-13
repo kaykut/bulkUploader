@@ -5,6 +5,7 @@ BulkUploader::Application.routes.draw do
   
   get 'whatelse/get_started'
   get 'whatelse/error'
+  get 'whatelse/download'
   
   get 'orders/index'
   get 'line_items/index'
