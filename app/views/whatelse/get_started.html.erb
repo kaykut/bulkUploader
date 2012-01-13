@@ -13,12 +13,12 @@
 
 <p>
 	<h4>How do I start?</h4>
-	<p>Start by providing Login Data. The login data is not authenticated with DFP until you start down/uploading data, so feel free to provide 'qwerty@asdf.com' to get around the tool and explore.</p>
+	<p>Start by providing Login Data. The login data is authenticated with DFP immediately, so you will have to provide authentic login details. <b>MAKE SURE YOU READ 'What do you do with the email & password I provide?' section below.</b></p>
 </p>
 
 <p>
-	<h4>Why is there a 'Sync from DFP' option? Wasn't this a bulk <b>uploader</b>?</h4>
-		In case the tool is used on DFP networks with existing Master Data, it is necessary to validate the new data against the data in the network. As validations occur in the local DB (before the actual sync to DFP), it is necessary to sync the data from DFP to local, in order for the validations to work effectively.<br/><br/>
+	<h4>Why is there a 'Download from DFP' option? Wasn't this a bulk <i>uploader</i>?</h4>
+		In case the tool is used on DFP networks with existing Master Data, it is necessary to validate the new data against the data in the network. As validations occur in the local DB (before the actual upload to DFP), it is necessary to download the data from DFP to local, in order for the validations to work effectively.<br/><br/>
 		We're planning to add the functionality to export the data on DB to a .csv, in case you or your client needs a xls list of the companies or ad units etc. on their network.
 </p>
 
@@ -59,7 +59,7 @@
 
 <p>
 	<h4What else should I pay attention to while uploading?</p> 
-	There are several points that need to be taken into account for successful uploads & syncs:
+	There are several points that need to be taken into account for successful uploads to DFP:
 	<ul>
 		<li>The column separator is ','. For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. </li>
 		<li>The starting and trailing spaces in names are ignored.</li>

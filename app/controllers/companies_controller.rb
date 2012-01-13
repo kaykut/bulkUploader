@@ -93,7 +93,7 @@ class CompaniesController < ApplicationController
   def sync_to_dfp
     
     if !Label.nw(session[:nw]).find_all_by_dfp_id(nil).blank?
-      flash[:error] = 'There are Labels that are not synced to DFP. Please sync those DFP before proceeding with syncing of Companies.'
+      flash[:error] = 'There are Labels that are not uploaded to DFP. Please upload those DFP before proceeding with uploading of Companies.'
       redirect_to(companies_path)
     else
       super

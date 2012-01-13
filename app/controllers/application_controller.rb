@@ -195,20 +195,20 @@ class ApplicationController < ActionController::Base
   end
 
   def get_root_ad_unit
-    
-    root_au = AdUnit.nw(session[:nw]).find_by_level(0)
-    return root_au if root_au
-
     dfp = get_dfp_instance 
     network_service = dfp.service(:NetworkService, API_VERSION)
-    
     effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
-    root_au = AdUnit.new(:name => session[:nw].to_s, 
-                         :level => 0,
-                         :dfp_id => effective_root_ad_unit_id,
-                         :network_id => session[:nw])
-    root_au.save
-    return root_au
+    
+    if root_au = AdUnit.nw(session[:nw]).find_by_level(0)
+      return root_au
+    else
+      root_au = AdUnit.new(:name => session[:nw].to_s, 
+                           :level => 0,
+                           :dfp_id => effective_root_ad_unit_id,
+                           :network_id => session[:nw])
+      root_au.save
+      return root_au
+    end
   end	
 
   def clear_all

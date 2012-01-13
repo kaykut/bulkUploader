@@ -7,6 +7,7 @@ class AdUnitsController < ApplicationController
 
     @ad_units = AdUnit.nw(session[:nw]).all
     root_au = get_root_ad_unit
+    
     @ad_units.delete(root_au)
     @ad_units.sort! do |a,b|       
       a.get_parent_of_level(1,'name') <=> b.get_parent_of_level(1,'name') 
