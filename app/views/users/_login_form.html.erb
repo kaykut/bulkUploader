@@ -1,3 +1,11 @@
+You should have read this in <%=link_to 'Getting Started', :controller => 'whatelse', :action => 'get_started' %>, but still...
+
+<div class="alert-message block-message">
+	<h5>What do you do with the email & password I provide?	<span class="label important">Important</span></h5><br/>
+	The email & password you provide are <b>NOT</b> encrypted (not through transmission, nor in the session data) and exposed in the logs. We therefore <b>strongly recommend</b> that you create a dummy user in the network where you will be uploading the data, specific for this task, and <b>deactivate that user</b> once your uploading is complete. As you already know, <b>you MUST NOT provide your Google ldap and password for this kind of operation.</b> 
+
+</div>
+
 <%= twitter_bootstrap_form_for :user do |f| %>
 	<%= f.inputs do %>
 		<%= f.text_field :email, :size => 50, :placeholder => 'Your dfp API account email' %>

@@ -12,14 +12,25 @@
 </p>
 
 <p>
+	<h4>Why is there a 'Download from DFP' option? Wasn't this a bulk <i>uploader</i>?</h4>
+		In case the tool is used on DFP networks with existing Master Data, it is necessary to validate the new data against the data in the network. As validations occur in the local DB (before the actual upload to DFP), it is necessary to download the data from DFP to local, in order for the validations to work effectively.<br/><br/>
+		We're planning to add the functionality to export the data on DB to a .csv, in case you or your client needs a xls list of the companies or ad units etc. on their network.
+</p>
+
+<p>
 	<h4>How do I start?</h4>
 	<p>Start by providing Login Data. The login data is authenticated with DFP immediately, so you will have to provide authentic login details. <b>MAKE SURE YOU READ 'What do you do with the email & password I provide?' section below.</b></p>
 </p>
 
 <p>
-	<h4>Why is there a 'Download from DFP' option? Wasn't this a bulk <i>uploader</i>?</h4>
-		In case the tool is used on DFP networks with existing Master Data, it is necessary to validate the new data against the data in the network. As validations occur in the local DB (before the actual upload to DFP), it is necessary to download the data from DFP to local, in order for the validations to work effectively.<br/><br/>
-		We're planning to add the functionality to export the data on DB to a .csv, in case you or your client needs a xls list of the companies or ad units etc. on their network.
+	<h4>What is the general workflow?</h4>
+	For each object type:
+	<ol>
+		<li>You download the existing master data on the DFP network to Local DB, from the corresponding tab.</li>
+		<li>You upload the new data in csv files to the Local DB, from the <%=link_to 'Uploads', uploads_path%> tab.</li>
+		<li>You upload the data in Local DB to DFP, from the corresponding tab.</li>
+	</ol>
+	You also have the option to delete all the data of each type in the Local DB and start over. The ability to edit certain objects is present, but it is not fully supported.
 </p>
 
 <p>
@@ -42,26 +53,23 @@
 </p>
 
 <p>
-	<h4>Can many consultants with multiple networks work with the tool at the same time?  <span class="label important">Important</span></h4>
+	<h4>Can many consultants working on multiple networks use DITTO at the same time?  <span class="label important">Important</span></h4>
 	Yes, although with some caveats: 
 	<ul>
-		<li>The application is deployed on a Ubiquity machine with no uptime guarantee.</li>
+		<li>The application is deployed on a Ubiquity machine with no uptime guarantee. (We are working on better deployment options.)</li>
 		<li>It runs on a very rudimentary server (WEBrick) and database (SQLite).</li>
 		<li>The server can only process 1 HTTP request at a time.</li>
 	</ul>
-	Given these points, we request that the users of the tool mark their usage dates on <a href=''>this trix</a>, so that potential users can see how many people are simultaneously using the tool. 
+	Hopefully in v0.2 we'll be a bit more stable. Until then, please get in youch if you'd like to use DITTO, and it is down.  
 </p>
 
 <p>
 	<h4>Is there a .csv template for uploads? What should I pay attention to while uploading?  <span class="label important">Important</span></h4>
-	Yes, you can download a .zip bundle of examplary .csv's <%=link_to 'here', 'whatelse/download' %></a>.
-</p>
-
-<p>
-	<h4What else should I pay attention to while uploading?</p> 
-	There are several points that need to be taken into account for successful uploads to DFP:
+	Yes, you can download a .zip bundle of ,csv's with columns headers <%=link_to 'here', 'whatelse/download' %></a>. See below points for the syntaxis of the values and more details.<br/><br/>
 	<ul>
 		<li>The column separator is ','. For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. </li>
+		<li>Labels applied to a company are listed by name. There might olnly be one filter with a given name and type = 'COMPETITIVE_EXCLUSION'.</li>
+		<li>Ad Unit sizes are defined in the    <b>[V]'width'x'height'</b>     format, where 'V' is optional for Video Sizes. A display Leaderboard would be described as 728x90, whereas a Video MPU would be 300x250. Aspect Ratio ad unit sizes and companion sizes for Video ad units are not supported as of yet.</li>
 		<li>The starting and trailing spaces in names are ignored.</li>
 		<li>For boolean attributes of entities, use values 'true' or 'false'.</li>
 		<li>Labels always need to be uploaded & downloaded before Companies, as otherwise Companies might not correctly reflect  the corresponding label assignments.</li>
