@@ -13,7 +13,7 @@ class AdUnit < ActiveRecord::Base
   belongs_to :parent, :class_name => 'AdUnit', :foreign_key => :parent_id_bulk
   accepts_nested_attributes_for :ad_unit_sizes, :reject_if => :already_exists
 
-  before_save :assign_defaults
+  after_initialize :assign_defaults
   before_save :remove_trailing_spaces
 
   validates :name, :presence => true, 
@@ -84,7 +84,7 @@ class AdUnit < ActiveRecord::Base
   end
 
   def self.row_to_params( row, nw_id )
-
+debugger
     return nil if row.blank?
     params = {}
     parent = AdUnit.find_by_level(0)
@@ -179,6 +179,7 @@ class AdUnit < ActiveRecord::Base
   def assign_defaults
     self.explicitly_targeted = false if self.explicitly_targeted.blank?
     self.target_window = 'BLANK' if self.target_window.blank?
+    self.target_platform = 'WEB' if self.target_platform.blank?
   end
 
   # VALIDATIONS & RELATED
