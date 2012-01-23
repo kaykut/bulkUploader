@@ -85,7 +85,7 @@ class Upload < ActiveRecord::Base
 			count = 0
       CSV.foreach( csv_file_in ) do |row_in|
 # skip header row
-debugger
+
         if data_class == 'AdUnit' and csv_is_erroneous
           row_out = row_in.dup
           row_out << 'Has not been checked due to previous errors.'
