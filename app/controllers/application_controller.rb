@@ -137,8 +137,7 @@ class ApplicationController < ActionController::Base
     all_locals.each do |c|
       if c.dfp_id.blank?
         to_create << c.params_bulk2dfp
-      elsif c.synced_at || c.created_at < c.updated_at
-        
+      elsif ( c.synced_at || c.created_at ) + 15 < c.updated_at
         to_update << c.params_bulk2dfp(true)
       end
     end
