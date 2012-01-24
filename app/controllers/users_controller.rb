@@ -12,10 +12,8 @@ class UsersController < ApplicationController
       begin
         root_au = get_root_ad_unit
       rescue Exception => e
-        if e.error == 'BadAuthentication'
-          flash[:error] = 'Login Unsuccessful. Please revise the login details.'
-          redirect_to(:controller => "users", :action => "login") and return
-        end
+        flash[:error] = 'Login Unsuccessful. Please revise the login details.'
+        redirect_to(:controller => "users", :action => "login") and return
       end
         
       redirect_to(:controller => "uploads", :action => "index")
