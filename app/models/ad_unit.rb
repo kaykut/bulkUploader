@@ -87,7 +87,7 @@ class AdUnit < ActiveRecord::Base
 
     return nil if row.blank?
     params = {}
-    parent = AdUnit.find_by_level(0)
+    parent = AdUnit.nw(nw_id).find_by_level(0)
 
 
     for i in 0..4
