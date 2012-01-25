@@ -89,7 +89,7 @@ class Upload < ActiveRecord::Base
         if data_class == 'AdUnit' and csv_is_erroneous
           row_out = row_in.dup
           row_out << 'Has not been checked due to previous errors.'
-          continue
+          next
         end
         
 				count += 1
