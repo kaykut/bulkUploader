@@ -84,7 +84,6 @@ class AdUnit < ActiveRecord::Base
   end
 
   def self.row_to_params( row, nw_id )
-
     return nil if row.blank?
     params = {}
     parent = AdUnit.nw(nw_id).find_by_level(0)

@@ -113,7 +113,7 @@ class AdUnitsController < ApplicationController
       updated = []
       all_locals_level_i = AdUnit.nw(session[:nw]).find_all_by_level(i+1)
 
-      break if all_locals_level_i.size == 0
+      next if all_locals_level_i.size == 0
 
       all_locals_level_i.each do |c|
         if c.dfp_id.blank?
@@ -122,7 +122,9 @@ class AdUnitsController < ApplicationController
           to_update << c.params_bulk2dfp(true)
         end
       end
-debugger
+
+			next if to_create.size == 0 and to_update.size == 0
+			
       begin
         created = dfp_service.create_ad_units(to_create) unless to_create.blank?
         updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
