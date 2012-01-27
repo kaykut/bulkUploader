@@ -123,8 +123,11 @@ class AdUnitsController < ApplicationController
         end
       end
 
+<<<<<<< HEAD
 			next if to_create.size == 0 and to_update.size == 0
 			
+=======
+>>>>>>> -debuggers
       begin
         created = dfp_service.create_ad_units(to_create) unless to_create.blank?
         updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
