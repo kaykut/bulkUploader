@@ -105,7 +105,7 @@ class AdUnitsController < ApplicationController
     statement = {:query => "LIMIT %d" % limit}
     all_created = []
     all_updated = []
-
+debugger
     5.times do |i|
       to_create = []
       to_update = []
@@ -123,14 +123,12 @@ class AdUnitsController < ApplicationController
         end
       end
 
-<<<<<<< HEAD
+      debugger
 			next if to_create.size == 0 and to_update.size == 0
 			
-=======
->>>>>>> -debuggers
       begin
         created = dfp_service.create_ad_units(to_create) unless to_create.blank?
-        updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
+        # updated = dfp_service.update_ad_units(to_update) unless to_update.blank?
         # HTTP errors.
       rescue AdsCommon::Errors::HttpError => e
         flash[:error] += "HTTP Error: %s" % e

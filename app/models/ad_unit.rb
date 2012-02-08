@@ -88,17 +88,15 @@ class AdUnit < ActiveRecord::Base
     params = {}
     parent = AdUnit.nw(nw_id).find_by_level(0)
 
-
+    
     for i in 0..4
       if row[i+1].blank? or i == 4
         params[:parent_id_bulk] = parent.id
         break
       else
-        if !parent.children.blank?
-          
+        if !parent.children.blank?      
           parent = parent.children.find{ |au| au.name == row[i] }
         else
-          
           params[:parent_id_bulk] = 'ERROR'
           break
         end
@@ -115,7 +113,6 @@ class AdUnit < ActiveRecord::Base
 
     params[:network_id] = nw_id
     return params
-
   end
 
   def ad_unit_sizes_list
@@ -129,7 +126,7 @@ class AdUnit < ActiveRecord::Base
 
   def self.ad_unit_sizes_params(slist, nw_id)
 
-    return if slist.blank?
+    return [] if slist.blank?
     sizes = CSV.parse_line(slist, :col_sep => ';')
     ad_unit_sizes_attributes = []
 

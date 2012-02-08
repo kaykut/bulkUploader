@@ -99,7 +99,9 @@ class Upload < ActiveRecord::Base
         end
         row_out = []
         params = eval(data_class + '.row_to_params( row_in, nw_id )')
+          
         # dummy_data = nil
+        puts row_in
         dummy_data = eval(data_class + '.new( params )')
 
         row_out = row_in #dump the original csv content into csv with errors

@@ -201,11 +201,10 @@ class ApplicationController < ActionController::Base
     if root_au = AdUnit.nw(session[:nw]).find_by_level(0)
       return root_au
     else
-      root_au = AdUnit.new(:name => session[:nw].to_s, 
-                           :level => 0,
-                           :dfp_id => effective_root_ad_unit_id,
-                           :network_id => session[:nw])
-      root_au.save
+      root_au = AdUnit.create(:name => session[:nw].to_s, 
+                              :level => 0, 
+                              :dfp_id => effective_root_ad_unit_id,
+                              :network_id => session[:nw])
       return root_au
     end
   end	
@@ -232,6 +231,8 @@ class ApplicationController < ActionController::Base
     if session[:user].blank?
       flash[:notice] = "Please provide API Login Data"
       redirect_to :controller => 'users', :action => 'login'
+    else
+      get_root_ad_unit
     end
   end
 
