@@ -105,7 +105,7 @@ class AdUnitsController < ApplicationController
     statement = {:query => "LIMIT %d" % limit}
     all_created = []
     all_updated = []
-debugger
+
     5.times do |i|
       to_create = []
       to_update = []
@@ -123,7 +123,7 @@ debugger
         end
       end
 
-      debugger
+      
 			next if to_create.size == 0 and to_update.size == 0
 			
       begin

@@ -8,6 +8,8 @@ class AdUnitSize < ActiveRecord::Base
   # validate :aspect_ratio_coherent_with_environment
 
   has_and_belongs_to_many :ad_units
+  
+  
   validates :height, :numericality => {:greater_than => 0, :only_integer => true}
   validates :width, :numericality => {:greater_than => 0, :only_integer => true}
 
