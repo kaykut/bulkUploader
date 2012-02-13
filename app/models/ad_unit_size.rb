@@ -9,10 +9,14 @@ class AdUnitSize < ActiveRecord::Base
 
   has_and_belongs_to_many :ad_units
   
+  has_many :companion_associations
+  has_many :companions, :through => :companion_associations
   
   validates :height, :numericality => {:greater_than => 0, :only_integer => true}
   validates :width, :numericality => {:greater_than => 0, :only_integer => true}
 
+  accepts_nested_attributes_for :companions, :reject_if => :is_not_video_ad_unit_size
+  
   scope :nw, lambda { |network_id| where( :network_id => network_id) }  
   
   def assign_aspect_ratio
@@ -28,6 +32,10 @@ class AdUnitSize < ActiveRecord::Base
     params[:size][:is_aspect_ratio] = self.is_aspect_ratio
     params[:environment_type] = self.environment_type
     params[:companions] = []
+    if self.companions 
+      self.companions.each do |caus|
+        params[:companions] << caus.params_bulk2dfp
+      end
     params[:id] = self.dfp_id if update
     return params 
   end
@@ -39,10 +47,27 @@ class AdUnitSize < ActiveRecord::Base
     params[:width] = p[:size][:width]
     params[:is_aspect_ratio] = p[:size][:is_aspect_ratio]
     params[:environment_type] = p[:environment_type]
+    if params[:companions]
+      params[:companions].each do |caus|
+        params[:companions_attributes] << AdUnitSize.params_dfp2bulk(caus)
+      end
     return params
   end
   
   private 
+
+  def is_not_video_ad_unit_size(params)
+    debugger
+    if self.environment_type != 'VIDEO_PLAYER'
+      self.errors.add(:environment_type, 'Non-video sizes cannot have companion sizes assigned.')
+      return true
+    elsif params[:environment_type] == 'VIDEO_PLAYER'
+      self.errors.add(:environment_type, 'Companions cannot be video sizes.')
+      return true
+    else
+      return false
+    end
+  end
   # to be reactivated when mobile ad units are allowed
   # def aspect_ratio_coherent_with_environment
   #   if self.is_aspect_ratio = true and self.XXXX != 'MOBILE' 

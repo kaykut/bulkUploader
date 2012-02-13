@@ -135,7 +135,17 @@ class AdUnit < ActiveRecord::Base
       if s[0].capitalize == 'V'
         params[:environment_type] ='VIDEO_PLAYER'
         s.delete!('vV')
+        v_and_comps = CSV.parse_line(s, :col_sep => '|')
+        if v_and_comps.size > 1
+          params[:companions_attributes] = []
+          v_and_comps.each_with_index do |cs, i|
+            next if i == 0
+            cwh = CSV.parse_line(cs, :col_sep => 'x')
+            params[:companions_attributes] << {:width => cwh[0].to_i, :height => cwh[1].to_i, :network_id => nw_id, :environment_type => 'BROWSER'}
+          end
+        end
       else
+        params[:is_aspect_ratio] = true if s[0].capitalize == 'A'
         params[:environment_type] ='BROWSER' 
       end
       wh = CSV.parse_line(s, :col_sep => 'x')

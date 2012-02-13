@@ -69,7 +69,18 @@
 	<ul>
 		<li>The column separator is ','. For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. </li>
 		<li>Labels applied to a company are listed by name. There might olnly be one filter with a given name and type = 'COMPETITIVE_EXCLUSION'.</li>
-		<li>Ad Unit sizes are defined in the    <b>[V]'width'x'height'</b>     format, where 'V' is optional for Video Sizes. A display Leaderboard would be described as 728x90, whereas a Video MPU would be 300x250. Aspect Ratio ad unit sizes and companion sizes for Video ad units are not supported as of yet.</li>
+		<li>Ad Unit sizes & companions are defined in the    <b>[x]'width'x'height'</b>     format, where 'x' is optional and can have 2 values:
+		 	<ul> 
+				<li>'V' for Video Sizes. Note that the separator between the video size and its companions is <strong>| (pipe character)</strong></li>
+			 	<li>'A' for Aspect Ratio sizes. Note that the separator between height & width do <strong>NOT</strong> change as opposed to DFP Premium.</li>
+			</ul>
+			So here are some example sizes: 
+			<ul>
+				<li>AdUnit with 3 regular display sizes: <strong>300x250;728x90;180x600<strong></li>
+				<li>AdUnit with 2 regular and 1 Aspect Ratio size: <strong>300x250;728x90;A3x2</strong></li>
+				<li>AdUnit with 2 Video Sizes, each with 2 companion sizes: <strong>V400x300|300x250|728x90;V640x480|900x60|180x600</strong></li>
+				<li>AdUnit with 1 Video size with 1 companion, 1 Aspect Ratio and 2 regular display sizes: <strong>V640x480|300x250;A4x1;300x250;728x90</strong></li>
+			</ul>
 		<li>The starting and trailing spaces in names are ignored.</li>
 		<li>For boolean attributes of entities, use values 'true' or 'false'.</li>
 		<li>Labels always need to be uploaded & downloaded before Companies, as otherwise Companies might not correctly reflect  the corresponding label assignments.</li>

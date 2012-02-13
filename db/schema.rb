@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112191230) do
+ActiveRecord::Schema.define(:version => 20120213195627) do
 
   create_table "ad_unit_sizes", :force => true do |t|
     t.integer  "height"
@@ -76,6 +76,13 @@ ActiveRecord::Schema.define(:version => 20120112191230) do
   create_table "companies_labels", :id => false, :force => true do |t|
     t.integer "company_id"
     t.integer "label_id"
+  end
+
+  create_table "companion_associations", :force => true do |t|
+    t.integer  "ad_unit_size_id"
+    t.integer  "companion_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "labels", :force => true do |t|

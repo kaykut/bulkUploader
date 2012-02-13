@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  ad_unit_size_id: 1
+  companion_id: 1
+
+two:
+  ad_unit_size_id: 1
+  companion_id: 1
