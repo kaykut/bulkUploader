@@ -143,9 +143,13 @@ class AdUnit < ActiveRecord::Base
             cwh = CSV.parse_line(cs, :col_sep => 'x')
             params[:companions_attributes] << {:width => cwh[0].to_i, :height => cwh[1].to_i, :network_id => nw_id, :environment_type => 'BROWSER'}
           end
+
         end
       else
-        params[:is_aspect_ratio] = true if s[0].capitalize == 'A'
+        if s[0].capitalize == 'A'
+          params[:is_aspect_ratio] = true 
+          s.delete!('aA')
+        end
         params[:environment_type] ='BROWSER' 
       end
       wh = CSV.parse_line(s, :col_sep => 'x')
