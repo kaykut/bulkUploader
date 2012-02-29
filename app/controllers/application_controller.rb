@@ -44,9 +44,6 @@ class ApplicationController < ActionController::Base
       begin 
 
         result_page = eval( 'dfp_service.get_' + type.pluralize + '_by_statement(statement)' )
-        # label_service = dfp.service(:LabelService, API_VERSION)
-        # label_page = {}
-        # label_page = label_service.get_labels_by_statement(statement)
 
         # HTTP errors.
       rescue AdsCommon::Errors::HttpError => e
@@ -202,15 +199,7 @@ class ApplicationController < ActionController::Base
     elsif type == 'network'
       return dfp.service(:NetworkService, API_VERSION)
     else
-<<<<<<< HEAD
-      root_au = AdUnit.create(:name => session[:nw].to_s, 
-                              :level => 0, 
-                              :dfp_id => effective_root_ad_unit_id,
-                              :network_id => session[:nw])
-      return root_au
-=======
       return eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
->>>>>>> synced_uploads
     end
   end
 
@@ -219,17 +208,20 @@ class ApplicationController < ActionController::Base
     begin
       network_service = get_service('network')
       effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
+      root_au = AdUnit.nw(session[:nw]).find_by_level(0)
 
-      if root_au = AdUnit.nw(session[:nw]).find_by_level(0)
-        return root_au
-      else
-        root_au = AdUnit.new(:name => session[:nw].to_s, 
-        :level => 0,
-        :dfp_id => effective_root_ad_unit_id,
-        :network_id => session[:nw])
+      if root_au.nil?
+        root_au = AdUnit.create(:name => session[:nw].to_s, 
+                                :level => 0,
+                                :dfp_id => effective_root_ad_unit_id,
+                                :network_id => session[:nw])
         root_au.save
-        return root_au
+      elsif root_au.dfp_id != effective_root_ad_unit_id
+        root_au.dfp_id = effective_root_ad_unit_id
+        root_au.save
       end
+
+      return root_au
 
     rescue
       flash[:error] = 'Looks like an authentication error. Please check your email & password.' +

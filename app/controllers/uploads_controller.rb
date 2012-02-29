@@ -97,41 +97,49 @@ class UploadsController < ApplicationController
       dfp_service = dfp.service(:InventoryService, API_VERSION)
       root_ad_unit = get_root_ad_unit
     else
-      dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+      service_sym = (type.classify + 'Service')-to_sym
+      dfp_service = dfp.service(service_sym, API_VERSION)
       #Label_Service gives error when trying to get all labels. 
       statement = Label.get_statement if type == 'label'
     end
 
-    result_page = eval( 'dfp_service.get_' + type.pluralize + '_by_statement(statement)' )
+    method = 'get_' + type.pluralize + '_by_statement'.to_sym
+    result_page = dfp_service.send(method, statement)
 
     result_page[:results].each do |result|
       next if type == 'ad_unit' and result[:parent_id].blank?
-      next if not eval(type.classify + '.find_by_dfp_id(result[:id])').nil?
+      next if not type.classify.constantize.find_by_dfp_id( result[:id] ).nil? 
       result[:network_id] = session[:nw]
-      cp = eval(type.classify + '.params_dfp2bulk(result)')
-      dc = eval( type.classify + '.new(cp)' )
-      dc.save(:validate => false) 
-      parent_updates << dc if type == 'ad_unit'
+      cp = type.classify.constantize.params_dfp2bulk( result )
+      dc = type.classify.constantize.new( cp )
+      dc.save( :validate => false ) 
     end
 
     total = result_page[:results].size
 
     if type == 'ad_unit'
-      parent_updates.each do |au|
-        if au.parent_id_dfp == root_ad_unit.dfp_id
-          au.level = 1
-          au.parent_id_bulk = root_ad_unit.id
-        else
-          parent = AdUnit.nw(session[:nw]).find_by_dfp_id(au.parent_id_dfp)
-          unless parent.blank?
-            au.parent_id_bulk = parent.id
-            au.level = au.get_level
-            parent = nil
+
+      parent_update = AdUnit.nw(session[:nw]).find_all_by_parent_id_bulk( nil )
+      while parent_update.count > 1
+
+        parent_updates.each do |au|
+          if au.parent_id_dfp == root_ad_unit.dfp_id
+            au.level = 1
+            au.parent_id_bulk = root_ad_unit.id
+          else
+            parent = AdUnit.nw(session[:nw]).find_by_dfp_id(au.parent_id_dfp)
+            if not parent.nil?
+              au.parent_id_bulk = parent.id
+              au.level = au.get_level
+              parent = nil
+            end
           end
-        end
-        au.save(:validate => false)
+          au.save(:validate => false)
+          ad_unit_level_update
+          parent_update = AdUnit.nw(session[:nw]).find_all_by_parent_id_bulk( nil )
+        
+        end    
       end
-      ad_unit_level_update
     end
 
   end

@@ -84,19 +84,20 @@ class Upload < ActiveRecord::Base
 
 			count = 0
       CSV.foreach( csv_file_in ) do |row_in|
-# skip header row
+        # skip header row
+        count += 1
+        if self.has_header and count == 1
+          csv << row_in 
+        	next
+        end
 
+# if type is AdUnit, stop upload when there is an error
         if data_class == 'AdUnit' and csv_is_erroneous
           row_out = row_in.dup
           row_out << 'Has not been checked due to previous errors.'
           next
         end
         
-				count += 1
-        if self.has_header and count == 1
-          csv << row_in 
-        	next
-        end
         row_out = []
         params = eval(data_class + '.row_to_params( row_in, nw_id )')
           
