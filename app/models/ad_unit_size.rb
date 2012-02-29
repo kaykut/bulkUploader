@@ -24,19 +24,21 @@ class AdUnitSize < ActiveRecord::Base
     return true
   end
   
-  def params_bulk2dfp(update = false)
+  def params_bulk2dfp(already_companion = false)
     params = {}
     params[:size] = {}
     params[:size][:height] = self.height
     params[:size][:width] = self.width
     params[:size][:is_aspect_ratio] = self.is_aspect_ratio
     params[:environment_type] = self.environment_type
-    params[:companions] = []
-    if self.companions 
-      self.companions.each do |caus|
-        params[:companions] << caus.params_bulk2dfp
+    if ( not already_companion ) and self.environment_type == 'VIDEO_PLAYER'
+      params[:companions] = []
+      if self.companions 
+        self.companions.each do |caus|
+          params[:companions] << caus.params_bulk2dfp(true)
+        end
       end
-    params[:id] = self.dfp_id if update
+    end
     return params 
   end
   
@@ -51,13 +53,14 @@ class AdUnitSize < ActiveRecord::Base
       params[:companions].each do |caus|
         params[:companions_attributes] << AdUnitSize.params_dfp2bulk(caus)
       end
+    end
     return params
   end
   
   private 
 
   def is_not_video_ad_unit_size(params)
-    debugger
+    
     if self.environment_type != 'VIDEO_PLAYER'
       self.errors.add(:environment_type, 'Non-video sizes cannot have companion sizes assigned.')
       return true

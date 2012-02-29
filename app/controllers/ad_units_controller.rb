@@ -119,7 +119,7 @@ class AdUnitsController < ApplicationController
         if c.dfp_id.blank?
           to_create << c.params_bulk2dfp
         elsif ( c.synced_at || c.created_at ) + 30 < c.updated_at
-          to_update << c.params_bulk2dfp(true)
+          to_update << c.params_bulk2dfp
         end
       end
 
@@ -194,8 +194,9 @@ class AdUnitsController < ApplicationController
 
     AdUnit.nw(session[:nw]).find_all_by_level(nil).each do |au|
       au.level = au.get_level
-      au.save(:validate => false)
+      au.save( :validate => false )
     end
+
     redirect_to :controller => @current_controller, :action => 'index'     
     
     rescue Exception => e

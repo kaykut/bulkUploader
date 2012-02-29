@@ -7,7 +7,6 @@ class CreateUploads < ActiveRecord::Migration
       t.string :filename
       t.boolean :imported
       t.string :errors_file
-      t.boolean :overwrite
       t.string :status
 
       t.timestamps

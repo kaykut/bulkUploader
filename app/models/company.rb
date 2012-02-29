@@ -45,7 +45,7 @@ class Company < ActiveRecord::Base
     return params
   end
   
-  def params_bulk2dfp(update = false)
+  def params_bulk2dfp
     params = {}
     params[:name] = self.name
     params[:email] = self.email
@@ -57,7 +57,6 @@ class Company < ActiveRecord::Base
     params[:enable_same_advertiser_competitive_exclusion] = self.enable_same_advertiser_competitive_exclusion
     params[:applied_labels] = []
     params[:credit_status] = self.credit_status
-    params[:id] = self.dfp_id if update
     params[:applied_labels] = [] 
     self.labels.each do |l|
       params[:applied_labels] << {:label_id =>l.dfp_id, :is_negated => false}
@@ -66,7 +65,6 @@ class Company < ActiveRecord::Base
   end
 
 	def self.row_to_params(row, nw_id)
-	  
     return nil if row.blank?
     
 	  params = {}

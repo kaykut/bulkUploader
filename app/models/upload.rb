@@ -9,10 +9,10 @@ class Upload < ActiveRecord::Base
   validates_presence_of :filename, :location
   validate :type_extension
 
-  DATA_EXISTS_ERROR_MSG = 'This data already exists in database.'
   EXTENSION_TYPE_NOT_COMPATIBLE_MSG = 'Only CSV files are supported.'
 	ERROR_MARK_STRING = 'X'
-
+  DATA_EXISTS_ERROR_MSG = 'This data already exists, either in DFP or in the previous lines of this file.'
+  PARENT_DOES_NOT_EXIST_MSG = 'Parent Ad Unit does not exist neither in DFP nor in the previous lines of this file.'
   scope :nw, lambda { |network_id| where( :network_id => network_id) }
 
 
@@ -44,15 +44,13 @@ class Upload < ActiveRecord::Base
         i += 1
       end
       self.filename = temp_filename
-
     else
-
       save_as = self.location + self.filename
-
     end
 
-    File.open( save_as.to_s, 'w' ) do |file|
-      file.write( self.file.read )
+    mode = 'w'
+    File.open( save_as.to_s, mode ) do |file|
+      file.write( self.file.read.force_encoding('UTF-8') )
     end
 
     self.status = 'Pending import'
@@ -67,7 +65,6 @@ class Upload < ActiveRecord::Base
     data_class = self.datatype.classify #class of data we're importing
     csv_is_erroneous = false #global indicator of error
     saved_data = []  #array to contain all objects to be inserted to DB in case no errors in csv file
-    deleted_data = [] #array to contain all objects to be deleted from DB in case of no errors & overwrite
     params = {} #params hash that are extracted from the csv row
     if !File.exists?(self.location) or !File.directory?(self.location)
       Dir::mkdir(self.location)
@@ -79,12 +76,14 @@ class Upload < ActiveRecord::Base
       self.status = 'File not found'
       return
     end
+
 #open output file for write
     CSV.open( csv_file_out, "wb" ) do |csv|
 
 			count = 0
       CSV.foreach( csv_file_in ) do |row_in|
         # skip header row
+        row_in.each {|e| e = e.force_encoding('UTF-8') if e.class.to_s == 'String'}
         count += 1
         if self.has_header and count == 1
           csv << row_in 
@@ -95,56 +94,39 @@ class Upload < ActiveRecord::Base
         if data_class == 'AdUnit' and csv_is_erroneous
           row_out = row_in.dup
           row_out << 'Has not been checked due to previous errors.'
+          csv << row_out
           next
         end
         
         row_out = []
-        params = eval(data_class + '.row_to_params( row_in, nw_id )')
-          
-        # dummy_data = nil
-        puts row_in
-        dummy_data = eval(data_class + '.new( params )')
+        params = data_class.constantize.row_to_params( row_in, nw_id )
+
+        dummy_data = data_class.constantize.new( params )
 
         row_out = row_in #dump the original csv content into csv with errors
-        exists = dummy_data.exists?
-        
-        if dummy_data.valid?
-          if exists
-            if self.overwrite
-              deleted_data << exists
-              eval( data_class + '.delete( exists )' )
-              saved_data << dummy_data
-              dummy_data.save
-            else #do NOT overwrite
-              csv_is_erroneous = true unless csv_is_erroneous
-              row_out << ERROR_MARK_STRING
-              row_out << DATA_EXISTS_ERROR_MSG #exists contain error msg if exists, false if not.
-            end
-          else #does not already exist
-            dummy_data.save
-            saved_data << dummy_data
-          end
 
-        else #not valid
-          csv_is_erroneous = true unless csv_is_erroneous
+        exists = dummy_data.exists?        
+        if dummy_data.valid? and ( not exists )
+          dummy_data.save
+          saved_data << dummy_data
+        else # not valid or already exists
+          csv_is_erroneous = true 
           row_out << ERROR_MARK_STRING
-          dummy_data.errors.each do |attribute, error|
-            
+          row_out << DATA_EXISTS_ERROR_MSG if exists
+          
+          dummy_data.errors.each do |attribute, error|            
             row_out << attribute.to_s + ': ' + error.to_s
           end
-          row_out << DATA_EXISTS_ERROR_MSG if exists
+          
         end
       csv << row_out
 
       end           #end of CSV.parse(csv_line_in)
-    end               #end of erroneous CSV file write
+    end             #end of erroneous CSV file write
 
     self.delete_file('O')
     if csv_is_erroneous
-      eval(data_class + '.delete(saved_data)')
-      deleted_data.each do |d|
-        d.dup.save
-      end
+      data_class.constantize.delete(saved_data)
       self.errors_file = add_to_filename( self.filename, "errors" )
       self.imported = false
       self.status = 'Erroneous'
@@ -206,6 +188,66 @@ class Upload < ActiveRecord::Base
     end
   end
 
+  # 
+  # 
+  # def self.get_root_ad_unit(nw_id,s)
+  #   session = {}
+  #   session[:nw] = nw_id
+  #   begin
+  #     
+  #     network_service = get_service('network',s)
+  #     effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
+  #     root_au = AdUnit.nw(session[:nw]).find_by_level(0)
+  # 
+  #     if root_au.nil?
+  #       root_au = AdUnit.create(:name => session[:nw].to_s, 
+  #                               :level => 0,
+  #                               :dfp_id => effective_root_ad_unit_id,
+  #                               :network_id => session[:nw])
+  #     elsif root_au.dfp_id != effective_root_ad_unit_id
+  #       root_au.dfp_id = effective_root_ad_unit_id
+  #       root_au.save
+  #     end
+  # 
+  #     return root_au
+  # 
+  #   rescue Exception => e
+  #     
+  #     a=1
+  #   end
+  # 
+  # end
+  # 
+  # def get_service(type,s)
+  #   dfp = get_dfp_instance(s)
+  #   # Get the Service.
+  #   if type == 'ad_unit'
+  #     return dfp.service(:InventoryService, API_VERSION)
+  #   elsif type == 'network'
+  #     return dfp.service(:NetworkService, API_VERSION)
+  #   else
+  #     service_type = (type.classify + 'Service').to_sym
+  #     return dfp.service(service_type, API_VERSION)
+  #   end
+  # end
+  # 
+  # def get_dfp_instance(session)
+  # 
+  #   dfp = DfpApi::Api.new(
+  #   { 
+  #     :authentication => 
+  #     {
+  #       :method => 'ClientLogin',
+  #       :application_name => 'bulkUploader',
+  #       :email => session[:user][:email],
+  #       :password => session[:user][:password],
+  #       :network_code => session[:nw]
+  #     },
+  #   :service => { :environment => session[:user][:environment] } 
+  #   })     
+  # 
+  # end
+  # 
 
 end
 

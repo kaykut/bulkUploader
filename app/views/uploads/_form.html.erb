@@ -9,7 +9,6 @@
     <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies', 'AdUnits'], :input_html => { :include_blank => false } %>
     <%= f.file_field :file, :input_html => { :class => 'input-file' } %>
     <%= f.toggles do %>
-			<%= f.check_box :overwrite, 'Overwrite Local DB with file contents.' %>
 			<%= f.check_box :has_header, 'The file has a header row.', :checked_value => true, :unchecked_value => false %>
 		<% end %>
 	<% end %>	 

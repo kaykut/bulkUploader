@@ -64,11 +64,21 @@
 </p>
 
 <p>
-	<h4>Is there a .csv template for uploads? What should I pay attention to while uploading?  <span class="label important">Important</span></h4>
+	  <h4><span class="label important">Important</span> What is the file format? Is there a .csv template for uploads? What should I pay attention to while uploading?</h4>
 	Yes, you can download a .zip bundle of ,csv's with columns headers <%=link_to 'here', 'whatelse/download' %></a>. See below points for the syntaxis of the values and more details.<br/><br/>
+
+	<span class="label important">Critical</span><strong> Respecting the file format (Especially Column Separators) is a must, as Ditto is not able to guess & detect variations in the file format.</strong> Below is the details of the file format:<br/>
+
 	<ul>
-		<li>The column separator is ','. For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. </li>
-		<li>Labels applied to a company are listed by name. There might olnly be one filter with a given name and type = 'COMPETITIVE_EXCLUSION'.</li>
+		<li>The file needs to be saved in <strong>UTF-8 Encoding</strong>. Any other encoding types might give you an error.</li>
+		<li><strong>Column Separators</strong>
+			<ul>
+				<li>The column separator is ','. </li>
+				<li>For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. Such columns should not be put in between quotes. i.e. you should <strong>not</strong> have "728x90;300x250", but simply 728x90;300x250 as the columns value. </li>
+				<li> The separator between the video master and Video companion sizes is | (pipe).</li>
+			</ul>
+		</li>
+		<li>Labels applied to a company are listed by name, as there might olnly be one filter with a given name and type = 'COMPETITIVE_EXCLUSION'.</li>
 		<li>Ad Unit sizes & companions are defined in the    <b>[x]'width'x'height'</b>     format, where 'x' is optional and can have 2 values:
 		 	<ul> 
 				<li>'V' for Video Sizes. Note that the separator between the video size and its companions is <strong>| (pipe character)</strong></li>
@@ -88,7 +98,7 @@
 		<li>In the Ad Unit upload, you need to make sure that the parent of an AdUnit is always on a previous line than the child. e.g. If you have an top level Ad Unit 'Reviews', and its child 'PhoneReviews', 'Reviews' should preceed 'PhoneReviews' in the csv file.</li>
 		<li>You have the options of "overwriting existing data" while uploading. This will NOT overwrite data in DFP, but in the local DB. Use it carefully.</li>
 		<li>Use the 'The file has a header row.' option carefully as well. Checking that box for a file without header will cause skipping the 1st line (=> errors), and vice versa will try to create a data from the header (=> errors). </li>
-		<li>Here's a list of some restricted values:'
+		<li>Here's a list of the restricted values:'
 			<ul>
 				<li>AdUnit  - Target Windows:		 'TOP', 'BLANK'</li>
 				<li>AdUnit  - Target Platforms:  'WEB', 'MOBILE'</li>

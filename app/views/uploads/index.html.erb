@@ -1,4 +1,51 @@
 <%= render 'layouts/action_bar'%>
+You should have read this in <%=link_to 'Getting Started', :controller => 'whatelse', :action => 'get_started' %>. <br/>
+<p>
+	  <h4><span class="label important">Important</span> What is the file format? Is there a .csv template for uploads? What should I pay attention to while uploading?</h4>
+	Yes, you can download a .zip bundle of ,csv's with columns headers <%=link_to 'here', 'whatelse/download' %></a>. See below points for the syntaxis of the values and more details.<br/><br/>
+
+	<span class="label important">Critical</span><strong> Respecting the file format (Especially Column Separators) is a must, as Ditto is not able to guess & detect variations in the file format.</strong> Below is the details of the file format:<br/>
+
+	<ul>
+		<li>The file needs to be saved in <strong>UTF-8 Encoding</strong>. Any other encoding types might give you an error.</li>
+		<li><strong>Column Separators</strong>
+			<ul>
+				<li>The column separator is ','. </li>
+				<li>For columns that contain multiple items (such as labels assigned to a Company, or sizes assigned to an Ad Unit) the separator between the items is ';'. Such columns should not be put in between quotes. i.e. you should <strong>not</strong> have "728x90;300x250", but simply 728x90;300x250 as the columns value. </li>
+				<li> The separator between the video master and Video companion sizes is | (pipe).</li>
+			</ul>
+		</li>
+		<li>Labels applied to a company are listed by name, as there might olnly be one filter with a given name and type = 'COMPETITIVE_EXCLUSION'.</li>
+		<li>Ad Unit sizes & companions are defined in the    <b>[x]'width'x'height'</b>     format, where 'x' is optional and can have 2 values:
+		 	<ul> 
+				<li>'V' for Video Sizes. Note that the separator between the video size and its companions is <strong>| (pipe character)</strong></li>
+			 	<li>'A' for Aspect Ratio sizes. Note that the separator between height & width do <strong>NOT</strong> change as opposed to DFP Premium.</li>
+			</ul>
+			So here are some example sizes: 
+			<ul>
+				<li>AdUnit with 3 regular display sizes: <strong>300x250;728x90;180x600<strong></li>
+				<li>AdUnit with 2 regular and 1 Aspect Ratio size: <strong>300x250;728x90;A3x2</strong></li>
+				<li>AdUnit with 2 Video Sizes, each with 2 companion sizes: <strong>V400x300|300x250|728x90;V640x480|900x60|180x600</strong></li>
+				<li>AdUnit with 1 Video size with 1 companion, 1 Aspect Ratio and 2 regular display sizes: <strong>V640x480|300x250;A4x1;300x250;728x90</strong></li>
+			</ul>
+		<li>The starting and trailing spaces in names are ignored.</li>
+		<li>For boolean attributes of entities, use values 'true' or 'false'.</li>
+		<li>Labels always need to be uploaded & downloaded before Companies, as otherwise Companies might not correctly reflect  the corresponding label assignments.</li>
+		<li>In the Ad Unit upload .csv file, you need to precise the entire hierarchy of the parents for Ad Units of any level. i.e. for an Ad Unit of level 4, the first 4 columns of the .csv need to have values.</li>
+		<li>In the Ad Unit upload, you need to make sure that the parent of an AdUnit is always on a previous line than the child. e.g. If you have an top level Ad Unit 'Reviews', and its child 'PhoneReviews', 'Reviews' should preceed 'PhoneReviews' in the csv file.</li>
+		<li>You have the options of "overwriting existing data" while uploading. This will NOT overwrite data in DFP, but in the local DB. Use it carefully.</li>
+		<li>Use the 'The file has a header row.' option carefully as well. Checking that box for a file without header will cause skipping the 1st line (=> errors), and vice versa will try to create a data from the header (=> errors). </li>
+		<li>Here's a list of the restricted values:'
+			<ul>
+				<li>AdUnit  - Target Windows:		 'TOP', 'BLANK'</li>
+				<li>AdUnit  - Target Platforms:  'WEB', 'MOBILE'</li>
+				<li>Company - Types: 						 'ADVERTISER', 'AGENCY', 'HOUSE_ADVERTISER', 'HOUSE_AGENCY', 'AD_NETWORK'</li>
+				<li>Company - Credit Status: 		 'ACTIVE','ON_HOLD', 'CREDIT_STOP', 'INACTIVE', 'BLOCKED'</li>
+				<li>Label   - Types: 						 'COMPETITIVE_EXCLUSION', 'AD_UNIT_FREQUENCY_CAP'</li>
+				</ul></li>
+	</ul>
+</p>
+
 <table class="zebra-striped bordered-table super-condensed-table">
   <thead>
 		<tr>

@@ -19,9 +19,8 @@ class Label < ActiveRecord::Base
     return params
   end
   
-  def params_bulk2dfp(update = false)
+  def params_bulk2dfp
     params = {}
-    params[:id] = self.dfp_id if update
     params[:name] = self.name
     params[:description] = self.description
     params[:type] = self.label_type

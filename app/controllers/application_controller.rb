@@ -32,9 +32,9 @@ class ApplicationController < ActionController::Base
       # Get the Service.
       if type == 'ad_unit'
         dfp_service = dfp.service(:InventoryService, API_VERSION)
-        get_root_ad_unit
       else
-        dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+        service_type = (type.classify + 'Service').to_sym
+        dfp_service = dfp.service(service_type, API_VERSION)
         #Label_Service gives error when trying to get all labels. 
         if type == 'label'
           statement = Label.get_statement
@@ -42,8 +42,8 @@ class ApplicationController < ActionController::Base
       end
 
       begin 
-
-        result_page = eval( 'dfp_service.get_' + type.pluralize + '_by_statement(statement)' )
+        method_name = ('dfp_service.get_' + type.pluralize + '_by_statement').to_sym
+        result_page = dfp_service.send(method_name, statement)
 
         # HTTP errors.
       rescue AdsCommon::Errors::HttpError => e
@@ -61,8 +61,8 @@ class ApplicationController < ActionController::Base
 
       result_page[:results].each do |result|
         result[:network_id] = session[:nw]
-        cp = eval(type.classify + '.params_dfp2bulk(result)')
-        to_be_updated = eval( type.classify + '.nw(session[:nw]).find_by_dfp_id( cp[:dfp_id] )')
+        cp = type.classify.constantize.params_dfp2bulk(result)
+        to_be_updated = type.classify.constantize.nw(session[:nw]).find_by_dfp_id( cp[:dfp_id] )
         if to_be_updated
           if type == 'ad_unit' and cp[:level] == 0
             no_update_needed_count += 1
@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
             no_update_needed_count += 1
           end
         else
-          dc = eval( type.classify + '.new(cp)' )
+          dc = type.classify.constantize.new(cp)
           dc.save(:validate => false)
           parent_updates << dc
           new_count += 1
@@ -115,7 +115,8 @@ class ApplicationController < ActionController::Base
       if type == 'ad_unit'
         dfp_service = dfp.service(:InventoryService, API_VERSION)
       else
-        dfp_service = eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+        service_type = ( type.classify + 'Service' ).to_sym
+        dfp_service = dfp.service(service_type, API_VERSION)
       end
 
       # Define initial values.
@@ -125,13 +126,13 @@ class ApplicationController < ActionController::Base
       to_update = []
       created = []
       updated = []
-      all_locals = eval( type.classify + '.nw(session[:nw]).all' )
+      all_locals = type.classify.constantize.nw(session[:nw]).all
 
       all_locals.each do |c|
         if c.dfp_id.blank?
           to_create << c.params_bulk2dfp
         elsif ( c.synced_at || c.created_at ) + 15 < c.updated_at
-          to_update << c.params_bulk2dfp(true)
+          to_update << c.params_bulk2dfp
         end
       end
 
@@ -140,8 +141,10 @@ class ApplicationController < ActionController::Base
         redirect_to :controller => @current_controller, :action => 'index' and return
       else
         begin
-          created = eval( 'dfp_service.create_' + type.pluralize + '(to_create)' ) unless to_create.blank?
-          updated = eval( 'dfp_service.update_' + type.pluralize + '(to_update)' ) unless to_update.blank?
+          create_method_name = ( 'create_' + type.pluralize ).to_sym
+          update_method_name = ( 'update_' + type.pluralize ).to_sym
+          created = dfp_service.send(create_method_name, to_create) unless to_create.blank?
+          updated = dfp_service.send(update_method_name, to_create) unless to_update.blank?
           # HTTP errors.
         rescue AdsCommon::Errors::HttpError => e
           flash[:error] += "HTTP Error: %s" % e
@@ -154,7 +157,8 @@ class ApplicationController < ActionController::Base
       end
 
       created.each do |cc|
-        local = eval( type.classify + '.nw(session[:nw]).find_by_name_and_' + type + '_type(cc[:name], cc[:type] )' )
+        method_name = ( 'find_by_name_and_' + type + '_type' ).to_sym
+        local = type.classify.constantize.nw(session[:nw]).send( method_name, cc[:name], cc[:type] )
         if local
           local.dfp_id = cc[:id]
           local.synced_at = Time.now
@@ -199,13 +203,15 @@ class ApplicationController < ActionController::Base
     elsif type == 'network'
       return dfp.service(:NetworkService, API_VERSION)
     else
-      return eval( 'dfp.service(:' + type.classify + 'Service, API_VERSION)' )
+      service_type = (type.classify + 'Service').to_sym
+      return dfp.service(service_type, API_VERSION)
     end
   end
 
 
   def get_root_ad_unit
     begin
+      
       network_service = get_service('network')
       effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
       root_au = AdUnit.nw(session[:nw]).find_by_level(0)
@@ -215,7 +221,6 @@ class ApplicationController < ActionController::Base
                                 :level => 0,
                                 :dfp_id => effective_root_ad_unit_id,
                                 :network_id => session[:nw])
-        root_au.save
       elsif root_au.dfp_id != effective_root_ad_unit_id
         root_au.dfp_id = effective_root_ad_unit_id
         root_au.save
@@ -233,8 +238,7 @@ class ApplicationController < ActionController::Base
 
   def clear_all
     begin 
-
-      eval( @current_controller.classify + '.delete(' + @current_controller.classify + '.nw(session[:nw]).all)' )
+      @current_controller.classify.constantize.delete( @current_controller.classify.constantize.nw(session[:nw]).all )
       if @current_controller == 'uploads'
         Dir.glob(Rails.root.to_s + '/tmp/uploads/' + session[:nw].to_s + '/*.*').each do |file|
           File.delete(file)
@@ -260,8 +264,8 @@ class ApplicationController < ActionController::Base
 
   def add_network_id_to_params
     if not ( params.blank? )
-      eval('params[:'+ @current_controller.singularize + '][:network_id] = ' +
-      'session[:nw] unless params[:' + @current_controller.singularize + '].nil?')
+      key = @current_controller.singularize.to_sym
+      params[key][:network_id] = session[:nw] unless params[key].nil?
     end
   end
 

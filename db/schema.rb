@@ -85,6 +85,16 @@ ActiveRecord::Schema.define(:version => 20120213195627) do
     t.datetime "updated_at"
   end
 
+  create_table "dfp_users", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "role_name"
+    t.string   "role_id"
+    t.integer  "network_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "labels", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -98,6 +108,20 @@ ActiveRecord::Schema.define(:version => 20120213195627) do
 
   add_index "labels", ["network_id", "name"], :name => "index_labels_on_network_id_and_name"
   add_index "labels", ["network_id"], :name => "index_labels_on_network_id"
+
+  create_table "orders", :force => true do |t|
+    t.string   "advertiser_id"
+    t.string   "name"
+    t.string   "trafficker_id"
+    t.string   "sales_person_id"
+    t.string   "agency_id"
+    t.string   "external_order_id"
+    t.string   "po_number"
+    t.integer  "network_id"
+    t.text     "notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
@@ -116,7 +140,6 @@ ActiveRecord::Schema.define(:version => 20120213195627) do
     t.string   "filename"
     t.boolean  "imported"
     t.string   "errors_file"
-    t.boolean  "overwrite"
     t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"

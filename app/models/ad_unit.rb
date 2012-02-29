@@ -37,20 +37,22 @@ class AdUnit < ActiveRecord::Base
     AdUnit.find_by_parent_id_bulk_and_name( self.parent_id_bulk, self.name? ) ? true : false
   end
 
+  def find_existing
+    AdUnit.find_by_parent_id_bulk_and_name( self.parent_id_bulk, self.name? )
+  end
+  
 
   def self.params_dfp2bulk(p)
     params = p.dup
     params[:ad_unit_sizes_attributes] = []
     params.delete(:ad_unit_sizes).each do |s|
-      s[:network_id] = p[:network_id]
+      s[:network_id] = p[:network_id].to_s
       params[:ad_unit_sizes_attributes] << AdUnitSize.params_dfp2bulk(s)
     end
     params[:dfp_id] = params.delete(:id).to_s
-    if p[:parent_id].nil?
-      params[:level] = 0
-    else
-      params[:parent_id_dfp] = params.delete(:parent_id)
-    end
+    params[:level] = 0 if p[:parent_id].nil?
+    params[:parent_id_dfp] = params.delete(:parent_id).to_s
+    
     params.delete(:ad_unit_code)
     params.delete(:inherited_ad_sense_settings)
     params.delete(:applied_label_frequency_caps)
@@ -59,10 +61,9 @@ class AdUnit < ActiveRecord::Base
     return params
   end
 
-  def params_bulk2dfp(update = false)
+  def params_bulk2dfp
     params = {}
     params[:name] = self.name
-    params[:id] = self.dfp_id
     params[:parent_id] = self.parent.dfp_id
     params[:description] = self.description
     params[:target_window] = self.target_window
@@ -74,37 +75,32 @@ class AdUnit < ActiveRecord::Base
     params[:id] = self.dfp_id if update
     return params
   end
-
+  
   def get_level
-    if not self.level.nil?
-      return self.level 
-    else
-      return self.parent.get_level + 1
-    end
+    self.level.nil? ? self.parent.get_level + 1 : self.level
   end
 
   def self.row_to_params( row, nw_id )
     return nil if row.blank?
     params = {}
     parent = AdUnit.nw(nw_id).find_by_level(0)
-
     
     for i in 0..4
-      if row[i+1].blank? or i == 4
-        params[:parent_id_bulk] = parent.id
+      if row[i+1].blank? or i == 4 or parent.nil?
         break
       else
         if !parent.children.blank?      
           parent = parent.children.find{ |au| au.name == row[i] }
         else
-          params[:parent_id_bulk] = 'ERROR'
+          params[:parent_id_bulk] = nil
           break
         end
       end
     end
-
-    params[:level] = i+1
+    params[:parent_id_dfp] = parent.nil? ? nil : parent.dfp_id
+    params[:parent_id_bulk] = parent.nil? ? nil : parent.id
     params[:name] = row[i]
+    params[:level] = i + 1 
     params[:ad_unit_sizes_attributes] = ad_unit_sizes_params( row[5], nw_id )
     params[:target_window] = row[6]
     params[:explicitly_targeted] = row[7]
@@ -177,9 +173,7 @@ class AdUnit < ActiveRecord::Base
 
   #TEST THIS
   def ad_unit_sizes_list=(slist)
-
     return if slist.blank?
-
     ad_unit_sizes_attributes = AdUnit.ad_unit_sizes_params(slist)
     ad_unit_sizes_attributes.each do |params|
       self.ad_unit_sizes << AdUnitSize.new(params)
@@ -187,6 +181,26 @@ class AdUnit < ActiveRecord::Base
 
   end
 
+  def parent
+    if parent_id_bulk.nil?
+      par = AdUnit.nw( self.network_id ).find_by_dfp_id( self.parent_id_dfp )
+      if not par.nil?
+        self.update_attribute( :parent_id_bulk, par.id )
+      end
+    else
+      par = AdUnit.nw( self.network_id ).find( self.parent_id_bulk )
+    end
+    return par
+  end
+  
+  
+  def list
+    result = []
+    AdUnit.all.each do |au|
+      result << {:name => au.name, :dfp_id => au.dfp_id, :parent_id_dfp => au.parent_id_dfp}
+    end
+    result
+  end
 
   protected
   def assign_defaults
@@ -213,11 +227,10 @@ class AdUnit < ActiveRecord::Base
   end
 
   def already_exists(params)
-    aus = AdUnitSize.find_by_height_and_width_and_is_aspect_ratio_and_environment_type_and_network_id( params[:height],
-                                                                                                       params[:width],
-                                                                                                       params[:is_aspect_ratio],
-                                                                                                       params[:environment_type],
-                                                                                                       params[:network_id] )
+    aus = AdUnitSize.nw(params[:network_id]).find_by_height_and_width_and_is_aspect_ratio_and_environment_type_and_network_id( params[:height],
+                                                                                                                               params[:width],
+                                                                                                                               params[:is_aspect_ratio],
+                                                                                                                               params[:environment_type] )
     if aus 
       self.ad_unit_sizes << aus
       return true
