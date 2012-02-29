@@ -155,7 +155,6 @@ class AdUnit < ActiveRecord::Base
         end
         params[:environment_type] ='BROWSER' 
       end
-      wh = CSV.parse_line(s, :col_sep => 'x')
       wh = CSV.parse_line( s, :col_sep => separator )
       params[:width] = wh[0].to_i
       params[:height] = wh[1].to_i
