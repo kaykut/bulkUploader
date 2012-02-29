@@ -23,13 +23,13 @@ class ApplicationController < ActionController::Base
   def sync_from_dfp
     begin
 
-    # Define initial values.
-    result_page = {}
-    flash[:error] = ''
-    no_update_needed_count = update_count = new_count = error_count = 0
-    limit = 9999
-    statement = {:query => "LIMIT %d" % limit}
-    type = @current_controller.singularize
+      # Define initial values.
+      result_page = {}
+      flash[:error] = ''
+      no_update_needed_count = update_count = new_count = error_count = 0
+      limit = 9999
+      statement = {:query => "LIMIT %d" % limit}
+      type = @current_controller.singularize
 
     # Get API instance.
     dfp = get_dfp_instance       

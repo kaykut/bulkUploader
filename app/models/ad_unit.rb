@@ -132,6 +132,7 @@ class AdUnit < ActiveRecord::Base
 
     sizes.each do |s|
       params = {}
+      separator = 'x'
       if s[0].capitalize == 'V'
         params[:environment_type] ='VIDEO_PLAYER'
         s.delete!('vV')
@@ -148,11 +149,14 @@ class AdUnit < ActiveRecord::Base
       else
         if s[0].capitalize == 'A'
           params[:is_aspect_ratio] = true 
+          separator = ':'
+          params[:is_aspect_ratio] = true
           s.delete!('aA')
         end
         params[:environment_type] ='BROWSER' 
       end
       wh = CSV.parse_line(s, :col_sep => 'x')
+      wh = CSV.parse_line( s, :col_sep => separator )
       params[:width] = wh[0].to_i
       params[:height] = wh[1].to_i
       params[:network_id] = nw_id
