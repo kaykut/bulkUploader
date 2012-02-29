@@ -1,0 +1,55 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Advertiser:</b>
+  <%= @order.advertiser_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @order.name %>
+</p>
+
+<p>
+  <b>Trafficker:</b>
+  <%= @order.trafficker_id %>
+</p>
+
+<p>
+  <b>Secondary trafficker:</b>
+  <%= @order.secondary_trafficker_id %>
+</p>
+
+<p>
+  <b>Sales person:</b>
+  <%= @order.sales_person_id %>
+</p>
+
+<p>
+  <b>Secondary sales person:</b>
+  <%= @order.secondary_sales_person_id %>
+</p>
+
+<p>
+  <b>Agency:</b>
+  <%= @order.agency_id %>
+</p>
+
+<p>
+  <b>External order:</b>
+  <%= @order.external_order_id %>
+</p>
+
+<p>
+  <b>Po number:</b>
+  <%= @order.po_number %>
+</p>
+
+<p>
+  <b>Currency code:</b>
+  <%= @order.currency_code %>
+</p>
+
+
+<%= link_to 'Edit', edit_order_path(@order) %> |
+<%= link_to 'Back', orders_path %>

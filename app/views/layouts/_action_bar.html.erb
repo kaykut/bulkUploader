@@ -1,10 +1,8 @@
 <div class='action_bar'>
 	<ul class="pills">
-		<li><%= link_to "New #{@current_controller.singularize.humanize}", :controller => @current_controller, :action => 'new' %> </li>
-		<li><%= link_to "Delete all #{@current_controller.humanize} in local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller.humanize} will be deleted. The data already in the dfp Servers will NOT be affected. Are you sure?" } %></li>
-		<% if @current_controller.capitalize != "Uploads" %>
-			<li><%= link_to "Download #{@current_controller.humanize} from DFP", { :controller => @current_controller, :action => 'sync_from_dfp' }, { :confirm => "All your local modifications over existing #{@current_controller.humanize} will be overwritten. Are you sure?" } %> </li>
-			<li><%= link_to "Upload #{@current_controller.humanize} to DFP", { :controller => @current_controller, :action => 'sync_to_dfp' }, { :confirm => "All your local #{@current_controller.humanize} will be created in the DFP network. This CAN NOT be undone.Are you sure?" } %> </li>
+		<% if @current_controller == 'uploads' %>
+			<li> <%= link_to 'New Upload', { :controller => 'uploads', :action => 'new' }%> </li>
 		<% end %>
+		<li><%= link_to "Delete all #{@current_controller.humanize} in local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller.humanize} will be deleted. The data already in the dfp Servers will NOT be affected. Are you sure?" } %></li>
 	</ul>
 </div>

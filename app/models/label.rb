@@ -1,6 +1,8 @@
 class Label < ActiveRecord::Base
 	
-	validates :name, :presence => true, :uniqueness => true, :length => {:maximum => 127 }
+	validates :name, :presence => true, 
+	                 :uniqueness => { :case_sensitive => false, :scope => [:network_id, :label_type] },
+	                 :length => {:maximum => 127 }
 	validate :label_type_value_is_permitted
 
 	has_and_belongs_to_many :companies

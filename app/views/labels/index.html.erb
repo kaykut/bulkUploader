@@ -15,9 +15,8 @@
 		    <td><%= label.name %></td>
 		    <td><%= label.label_type %></td>
 		    <td><%= label.description %></td>
-				<td><%= label.dfp_id.blank? ? "No" : "Yes" %></td>	
-		    <td><%= link_to 'Edit', edit_label_path(label) %>
-		    		| <%= link_to 'Delete', label, confirm: 'Are you sure?', method: :delete %></td>
+			<td><%= label.dfp_id.blank? ? "No" : "Yes" %></td>	
+		    <td><%= link_to 'Details', label_path %>
 		  </tr>
 		<% end %>
 	</tbody>

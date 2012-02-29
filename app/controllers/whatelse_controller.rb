@@ -6,7 +6,7 @@ class WhatelseController < ApplicationController
   end
 
   def get_started
-    
+
   end
 
   def download

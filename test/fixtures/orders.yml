@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  advertiser_id: MyString
+  name: MyString
+  trafficker_id: MyString
+  secondary_trafficker_id: MyString
+  sales_person_id: MyString
+  secondary_sales_person_id: MyString
+  agency_id: MyString
+  external_order_id: MyString
+  po_number: MyString
+  currency_code: MyString
+
+two:
+  advertiser_id: MyString
+  name: MyString
+  trafficker_id: MyString
+  secondary_trafficker_id: MyString
+  sales_person_id: MyString
+  secondary_sales_person_id: MyString
+  agency_id: MyString
+  external_order_id: MyString
+  po_number: MyString
+  currency_code: MyString

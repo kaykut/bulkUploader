@@ -1,2 +1,2 @@
 name,company_type,address,email,fax_phone,primary_phone,external_id,comment,enable_same_advertiser_competitive_exclusion,labels
-test_adv_01,ADVERTISER,,,,,,,,,airlines;perfume
+test_adv_123,ADVERTISER,,,,,,,,,

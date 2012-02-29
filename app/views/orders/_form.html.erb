@@ -1,0 +1,57 @@
+<%= form_for(@order) do |f| %>
+  <% if @order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+
+      <ul>
+      <% @order.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :advertiser_id %><br />
+    <%= f.text_field :advertiser_id %>
+  </div>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :trafficker_id %><br />
+    <%= f.text_field :trafficker_id %>
+  </div>
+  <div class="field">
+    <%= f.label :secondary_trafficker_id %><br />
+    <%= f.text_field :secondary_trafficker_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sales_person_id %><br />
+    <%= f.text_field :sales_person_id %>
+  </div>
+  <div class="field">
+    <%= f.label :secondary_sales_person_id %><br />
+    <%= f.text_field :secondary_sales_person_id %>
+  </div>
+  <div class="field">
+    <%= f.label :agency_id %><br />
+    <%= f.text_field :agency_id %>
+  </div>
+  <div class="field">
+    <%= f.label :external_order_id %><br />
+    <%= f.text_field :external_order_id %>
+  </div>
+  <div class="field">
+    <%= f.label :po_number %><br />
+    <%= f.text_field :po_number %>
+  </div>
+  <div class="field">
+    <%= f.label :currency_code %><br />
+    <%= f.text_field :currency_code %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

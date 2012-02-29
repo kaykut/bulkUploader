@@ -106,6 +106,7 @@ class Upload < ActiveRecord::Base
 
         row_out = row_in #dump the original csv content into csv with errors
         exists = dummy_data.exists?
+        
         if dummy_data.valid?
           if exists
             if self.overwrite

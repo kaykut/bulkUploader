@@ -6,8 +6,10 @@ class Company < ActiveRecord::Base
 	require 'csv'
 	
 	attr_accessor :label_list
-
-	validates :name, :presence => true, :length => { :maximum => 127 }, :uniqueness => { :case_sensitive => false }
+#TODO: name uniqueness scope? only among same type?
+	validates :name, :presence => true, 
+	                 :length => { :maximum => 127 }, 
+	                 :uniqueness => { :case_sensitive => false,  :scope => [:network_id, :company_type] }
 	validates :address, :length => { :maximum => 65535 }
 	validates :email, :length => { :maximum => 127 }
 	validates :fax_phone, :length => { :maximum => 63 } 
@@ -15,6 +17,7 @@ class Company < ActiveRecord::Base
 	validates :external_id, :length => { :maximum => 255 }
 	validates :comment, :length => { :maximum => 1024 }
   validates_email_format_of :email, :allow_nil => true, :allow_blank => true
+
   validate :credit_status, :inclusion => { :in => Company::CREDIT_STATUS }
 	validate :company_type_value_is_permitted
 	validate :labels_exist
