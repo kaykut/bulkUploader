@@ -27,8 +27,6 @@ class ApplicationController < ActionController::Base
       statement = {:query => "LIMIT %d" % limit}
       type = @current_controller.singularize
 
-    # Get API instance.
-    # Get the Service.
       # Get API instance.
       dfp = get_dfp_instance       
       # Get the Service.
