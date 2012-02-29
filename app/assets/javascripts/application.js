@@ -7,6 +7,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
-=require rails.validations
-<script src="js/jquery/jquery.tablesorter.min.js"></script>
-$("table.sortable").tablesorter({ sortList: [[1,0]] });
+// =require rails.validations
+// <script src="js/jquery/jquery.tablesorter.min.js"></script>
+// $("table.sortable").tablesorter({ sortList: [[1,0]] });
