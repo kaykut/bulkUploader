@@ -139,10 +139,13 @@ class AdUnitsController < ApplicationController
         end
       end    
 
+			next if to_create.size == 0 and to_update.size == 0
+			
+      created = dfp_service.create_ad_units(to_create) unless to_create.blank?
 
       created.each do |cc|
         p = AdUnit.params_dfp2bulk(cc)
-        local = AdUnit.nw(session[:nw]).find_by_name_and_parent_id_dfp(p[:name], p[:parent_id])
+        local = AdUnit.nw(session[:nw]).find_by_name_and_parent_id_dfp(p[:name], p[:parent_id_dfp])
         if local
           local.dfp_id = p[:dfp_id]
           local.synced_at = Time.now
