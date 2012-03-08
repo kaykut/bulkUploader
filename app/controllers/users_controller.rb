@@ -3,12 +3,12 @@ class UsersController < ApplicationController
   def login
     
     if request.post?
-      
       session[:user] = {}
       session[:user][:email] = params[:user][:email] 
       session[:nw] = session[:user][:network_id] = params[:user][:network_id].to_i
       session[:user][:password] = params[:user][:password]
       session[:user][:environment] = params[:user][:environment]
+      session[:local_test] = params[:user][:local_test] == 1 ? true : false
       begin
         root_au = get_root_ad_unit
       rescue Exception => e

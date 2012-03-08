@@ -19,9 +19,9 @@ class AdUnit < ActiveRecord::Base
   validates :name, :presence => true, 
                    :length => { :maximum => 100 }, 
                    :uniqueness => { :case_sensitive => false, :scope => [:network_id, :parent_id_bulk] }
- 
   validates :description, :length => {:maximum => 65535}
 
+  validate :name_characters_ok
   validate :target_window_value_ok, :unless => :is_root_level?
   validate :target_platform_value_ok, :unless => :is_root_level?
   validate :parent_exists, :unless => :is_root_level?
@@ -44,6 +44,7 @@ class AdUnit < ActiveRecord::Base
 
   def self.params_dfp2bulk(p)
     params = p.dup
+    params[:name] = params[:name].to_s
     params[:ad_unit_sizes_attributes] = []
     params.delete(:ad_unit_sizes).each do |s|
       s[:network_id] = p[:network_id].to_s
@@ -80,6 +81,19 @@ class AdUnit < ActiveRecord::Base
     self.level.nil? ? self.parent.get_level + 1 : self.level
   end
 
+  def to_row
+    row = []
+    5.times do |i|
+      row << self.get_parent_of_level(i+1, 'name' )
+    end
+    row << self.ad_unit_sizes_list
+    row << self.target_window
+    row << self.explicitly_targeted
+    row << self.target_platform
+    row << self.description
+    return row
+  end
+  
   def self.row_to_params( row, nw_id )
     return nil if row.blank?
     params = {}
@@ -111,11 +125,28 @@ class AdUnit < ActiveRecord::Base
     return params
   end
 
-  def ad_unit_sizes_list
+  def ad_unit_sizes_list(to_file = false)
     sl = ''
     self.ad_unit_sizes.each_with_index do |l, i|
-      sl += l.width.to_s + 'x' + l.height.to_s
-      sl += '; ' if i < ( self.ad_unit_sizes.size - 1 )
+      aus = ''
+      if l.is_aspect_ratio
+        aus = 'A' + l.width.to_s + ':' + l.height.to_s        
+      else
+        aus = l.width.to_s + 'x' + l.height.to_s
+        if l.environment_type == 'VIDEO_PLAYER'
+          aus = 'V'+ aus 
+          l.companions.each do |c|
+            aus += '|' + c.width.to_s + 'x' + c.height.to_s
+          end
+        end
+      end
+      sl += aus
+      
+      if not to_file
+        sl +=  '; ' if i < ( self.ad_unit_sizes.size - 1 )
+      else
+        sl += ';' if i < ( self.ad_unit_sizes.size - 1 )
+      end
     end
     return sl
   end
@@ -146,7 +177,6 @@ class AdUnit < ActiveRecord::Base
         if s[0].capitalize == 'A'
           params[:is_aspect_ratio] = true 
           separator = ':'
-          params[:is_aspect_ratio] = true
           s.delete!('aA')
         end
         params[:environment_type] ='BROWSER' 
@@ -250,4 +280,15 @@ class AdUnit < ActiveRecord::Base
     end
   end
 
+  def name_characters_ok
+    if self.name.include?('|') 
+      errors.add('name', 'name cannot contain "|" (pipe character)')
+    elsif self.name.include?(' ') 
+      errors.add('name', 'name cannot contain " " (space)')
+    elsif self.name.include?('/')
+      errors.add('name', 'name cannot contain "/" (slash character)')
+    end
+  end
+  
+  
 end

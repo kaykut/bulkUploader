@@ -3,6 +3,6 @@
 		<% if @current_controller == 'uploads' %>
 			<li> <%= link_to 'New Upload', { :controller => 'uploads', :action => 'new' }%> </li>
 		<% end %>
-		<li><%= link_to "Delete all #{@current_controller.humanize} in local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller.humanize} will be deleted. The data already in the dfp Servers will NOT be affected. Are you sure?" } %></li>
+		<li><%= link_to "Delete all #{@current_controller.humanize} from local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller.humanize} will be deleted. The data already in the dfp Servers will NOT be affected. Are you sure?" } %></li>
 	</ul>
 </div>

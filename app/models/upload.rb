@@ -53,14 +53,12 @@ class Upload < ActiveRecord::Base
       file.write( self.file.read.force_encoding('UTF-8') )
     end
 
-    self.status = 'Pending import'
-    self.save
+    self.update_attribute(:status, 'Pending Import')
   end
 
   def import(nw_id)
+    self.update_attribute(:status, 'Import in progress')
     
-    self.status = 'Processing'
-    self.save
 #initialize vars
     data_class = self.datatype.classify #class of data we're importing
     csv_is_erroneous = false #global indicator of error
@@ -73,7 +71,7 @@ class Upload < ActiveRecord::Base
     csv_file_in = File.join( self.location, self.filename )
 
     if not( File.exists?(csv_file_in) )
-      self.status = 'File not found'
+      self.update_attribute(:status, 'File not found.')
       return
     end
 
@@ -99,6 +97,7 @@ class Upload < ActiveRecord::Base
         end
         
         row_out = []
+
         params = data_class.constantize.row_to_params( row_in, nw_id )
 
         dummy_data = data_class.constantize.new( params )
@@ -129,12 +128,10 @@ class Upload < ActiveRecord::Base
       data_class.constantize.delete(saved_data)
       self.errors_file = add_to_filename( self.filename, "errors" )
       self.imported = false
-      self.status = 'Erroneous'
-      self.save
+      self.update_attribute(:status, 'Errors in File')
     else
       File.delete( csv_file_out )
       self.imported = true
-      self.status = 'Imported'
       self.save
     end
 
@@ -145,6 +142,12 @@ class Upload < ActiveRecord::Base
   def destroy
     delete_file('OE')
     super
+  end
+
+  def add_to_filename( filename, string_to_add )
+    File.basename( filename, File.extname( filename ) ) +
+                            "_" + string_to_add +
+                            File.extname( filename )
   end
 
   protected
@@ -175,12 +178,6 @@ class Upload < ActiveRecord::Base
     end
   end
 
-  def add_to_filename( filename, string_to_add )
-    File.basename( filename, File.extname( filename ) ) +
-                            "_" + string_to_add +
-                            File.extname( filename )
-  end
-
   def type_extension
     extension = File.extname( self.filename ).sub( /^\./, '' ).downcase
     if extension != 'csv'
@@ -188,66 +185,6 @@ class Upload < ActiveRecord::Base
     end
   end
 
-  # 
-  # 
-  # def self.get_root_ad_unit(nw_id,s)
-  #   session = {}
-  #   session[:nw] = nw_id
-  #   begin
-  #     
-  #     network_service = get_service('network',s)
-  #     effective_root_ad_unit_id = network_service.get_current_network[:effective_root_ad_unit_id]
-  #     root_au = AdUnit.nw(session[:nw]).find_by_level(0)
-  # 
-  #     if root_au.nil?
-  #       root_au = AdUnit.create(:name => session[:nw].to_s, 
-  #                               :level => 0,
-  #                               :dfp_id => effective_root_ad_unit_id,
-  #                               :network_id => session[:nw])
-  #     elsif root_au.dfp_id != effective_root_ad_unit_id
-  #       root_au.dfp_id = effective_root_ad_unit_id
-  #       root_au.save
-  #     end
-  # 
-  #     return root_au
-  # 
-  #   rescue Exception => e
-  #     
-  #     a=1
-  #   end
-  # 
-  # end
-  # 
-  # def get_service(type,s)
-  #   dfp = get_dfp_instance(s)
-  #   # Get the Service.
-  #   if type == 'ad_unit'
-  #     return dfp.service(:InventoryService, API_VERSION)
-  #   elsif type == 'network'
-  #     return dfp.service(:NetworkService, API_VERSION)
-  #   else
-  #     service_type = (type.classify + 'Service').to_sym
-  #     return dfp.service(service_type, API_VERSION)
-  #   end
-  # end
-  # 
-  # def get_dfp_instance(session)
-  # 
-  #   dfp = DfpApi::Api.new(
-  #   { 
-  #     :authentication => 
-  #     {
-  #       :method => 'ClientLogin',
-  #       :application_name => 'bulkUploader',
-  #       :email => session[:user][:email],
-  #       :password => session[:user][:password],
-  #       :network_code => session[:nw]
-  #     },
-  #   :service => { :environment => session[:user][:environment] } 
-  #   })     
-  # 
-  # end
-  # 
 
 end
 

@@ -93,6 +93,12 @@ class Company < ActiveRecord::Base
 	  return params
 	end
 	
+	def to_row
+	  row = [self.name, self.company_type, self.address, self.email, self.fax_phone, self.primary_self.phone, self.external_id, self.comment, 
+	   self.enable_same_advertiser_competitive_exclusion, self.credit_status]
+    row << self.label_list
+	end
+	
   def exists?
     Company.find_by_name(self.name) ? true : false
   end
@@ -101,9 +107,9 @@ class Company < ActiveRecord::Base
     return '' if self.labels.blank?
     ll = ''
     self.labels.each_with_index do |l, i|
-        ll += l.name + '; '
+        ll += l.name + ';'
     end
-    return ll.chop!.chop!
+    return ll.chop!
   end
   
   def label_list=(llist)

@@ -1,14 +1,11 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Dfp:</b>
-  <%= @ad_unit.dfp_id %>
-</p>
-
-<p>
-  <b>Parent:</b>
-  <%= @ad_unit.parent_id %>
-</p>
+<% (@ad_unit.level - 1).times do |i| %>
+	<p>
+	  <b>Parent of level <%= %{ i+1 } %>:</b>
+	  <%= @ad_unit.get_parent_of_level(i+1, 'name') %>
+	</p>
+<% end %>
 
 <p>
   <b>Name:</b>
@@ -16,8 +13,8 @@
 </p>
 
 <p>
-  <b>Description:</b>
-  <%= @ad_unit.description %>
+	<b>Sizes:</b>
+	<%= @ad_unit.ad_unit_sizes_list %>
 </p>
 
 <p>
@@ -26,15 +23,14 @@
 </p>
 
 <p>
-  <b>Status:</b>
-  <%= @ad_unit.status %>
+  <b>Explicitly targeted:</b>
+  <%= @ad_unit.explicitly_targeted ? 'YES' : 'NO' %>
 </p>
 
 <p>
-  <b>Explicitly targeted:</b>
-  <%= @ad_unit.explicitly_targeted %>
+  <b>Description:</b>
+  <%= @ad_unit.description %>
 </p>
 
 
-<%= link_to 'Edit', edit_ad_unit_path(@ad_unit) %> |
 <%= link_to 'Back', ad_units_path %>

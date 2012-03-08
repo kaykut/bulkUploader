@@ -5,7 +5,7 @@
   	</div>	
 	<% end %>
 	<%= f.inputs 'Upload', :class=> 'Upload' do %>
-    <%= f.text_field :name, :placeholder => 'Not necessarily the filename' %>
+    <%= f.text_field :name, :placeholder => 'An identifier for remembering later.' %>
     <%= f.select 'datatype', 'Datatype', ['Labels', 'Companies', 'AdUnits'], :input_html => { :include_blank => false } %>
     <%= f.file_field :file, :input_html => { :class => 'input-file' } %>
     <%= f.toggles do %>

@@ -14,6 +14,13 @@ You should have read this in <%=link_to 'Getting Started', :controller => 'whate
     <%= f.select 'environment', 'Environment',
 							 ['SANDBOX', 'PRODUCTION'],
 				   		 :input_html => { :include_blank => false } %>
+
+		<% if @kaya_local %>
+	    <%= f.toggles do %>
+				<%= f.check_box :local_test, 'Kaya\'s local tests. Does NOT connect to API. Only local imports', :checked_value => true, :unchecked_value => false %>
+			<% end %>
+		<% end %>		
+				
 	<% end %>
 	<%= f.actions do%>
   	<%= f.submit "Submit Login Data", :class => 'btn primary' %>

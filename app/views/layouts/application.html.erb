@@ -9,30 +9,36 @@
 </head>
 <body style='padding-top:50px'>
 	<div class='container'>
-		<h1>DITTO for DFP Premium</h1>
+		<h1>
+			DITTO for DFP Premium
+			<% if session[:local_test] %>
+				<span class="label important">LOCAL TEST</span>
+			<% end %>
+		</h1>
+		
 		<div id='header'>
 			<%= render '/layouts/tabbar' %>
 		<div>
 			
 		<% if not flash[:info].blank?%>
 			<div class="alert-message block-message info">
-	    <p><%= flash[:info] %></p>
-	  </div>
+	    	<p><%= flash[:info] %></p>
+	  	</div>
 		<% end %>
 		<% if not flash[:success].blank?%>
 			<div class="alert-message block-message success">
-	    <p><%= flash[:success] %></p>
-	  </div>
+		    <p><%= flash[:success] %></p>
+		  </div>
 		<% end %>
 		<% if not flash[:error].blank?%>
 			<div class="alert-message block-message error">
-	    <p><%= flash[:error] %></p>
-	  </div>
+		    <p><%= flash[:error] %></p>
+		  </div>
 		<% end %>
 		<% if not flash[:notice].blank?%>
 			<div class="alert-message block-message warning">
-	    <p><%= flash[:notice] %></p>
-	  </div>
+		    <p><%= flash[:notice] %></p>
+		  </div>
 		<% end %>
 
 		<%= yield %>

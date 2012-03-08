@@ -36,6 +36,10 @@ class Label < ActiveRecord::Base
     return params
 	end
 
+  def to_row
+    row = [self.name, self.desciption, self.label_type]
+  end
+
   def exists?
     if Label.find_by_name(self.name)
       return true

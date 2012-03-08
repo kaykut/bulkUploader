@@ -7,6 +7,7 @@
 	    <th>Level 3</th>
 	    <th>Level 4</th>
 	    <th>Level 5</th>		
+			<th>Sizes</th>
 	    <th>Explicitly targeted</th>
 		<th>Uploaded to DFP?</th>
 	    <th></th>
@@ -16,11 +17,12 @@
 <% @ad_units.each do |ad_unit| %>
   <tr>
 	<% 5.times do |i|%>
-	<td><%= ad_unit.get_parent_of_level(i+1, 'name' ) %></td>
+		<td><%= ad_unit.get_parent_of_level(i+1, 'name' ) %></td>
 	<% end %>
+		<td><%= ad_unit.ad_unit_sizes_list %></td>
     <td><%= ad_unit.explicitly_targeted ? "Yes" : "No" %></td>
-	<td><%= ad_unit.dfp_id.blank? ? "No" : "Yes"%>
-    <td><%= link_to 'Details' %></td>
+		<td><%= ad_unit.dfp_id.blank? ? "No" : "Yes"%></td>
+    <td><%= link_to 'Details', ad_unit %></td>
   </tr>
 <% end %>
 </table>

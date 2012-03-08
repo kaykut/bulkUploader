@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120213195627) do
+ActiveRecord::Schema.define(:version => 20120305081024) do
 
   create_table "ad_unit_sizes", :force => true do |t|
     t.integer  "height"
@@ -144,6 +144,8 @@ ActiveRecord::Schema.define(:version => 20120213195627) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "network_id"
+    t.string   "created_file"
+    t.string   "not_created_file"
   end
 
   add_index "uploads", ["network_id"], :name => "index_uploads_on_network_id"
