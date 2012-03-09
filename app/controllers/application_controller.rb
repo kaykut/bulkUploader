@@ -119,168 +119,108 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  def download_all
+    ad_unit_header = 'Top Level AU Name, 2nd Level AU Name, 3rd Level AU Name, 4th Level AU Name, 5th Level AU Name, Ad Unit Sizes, Target Window, Explicitly Targeted, Target Platform, Description'
+    company_header = 'Name,Company Type, Address, Email, Fax Phone, Primary Phone, External ID, Comment, enable_same_advertiser_competitive_exclusion, Credit Status, Labels'
+    label_header = 'Name, description, Label Type'
+    
+    type = @current_controller.singularize
+    all_objects = type.classify.constantize.nw(session[:nw]).all
+    if type == 'ad_unit'
+      root_au = get_root_ad_unit
+      all_objects.delete(root_au)
+    end
+    type.classify.constantize.sort_all(all_objects)
+    r = (rand*10000000000).floor.to_s
+    temp_path = File.join( Rails.root.to_s, "/tmp/") 
+    temp_file = temp_path + r + '.csv'
+    
+
+    CSV.open(temp_file, "wb") do |csv|
+      csv << [eval(type + '_header')]
+      all_objects.each do |o|
+        csv << o.to_row
+      end
+    end
+
+    File.rename(temp_file, temp_path + type.pluralize + '_nw_' + session[:nw].to_s + '.csv')
+    temp_file = temp_path + type + '_nw_' + session[:nw].to_s + '.csv'
+    send_file(temp_file, :type => "application/csv")
+    File.delete(temp_file)
+    
+  end
+  
+  def copy_from_dfp
+    type = @current_controller.singularize
+    # Define initial values.
+    result_page = {}
+    statement = {:query => "LIMIT 99999"}
+    parent_update = []
+
+    # Get API instance.
+    dfp = get_dfp_instance       
+
+    # Get the Service.
+    if type == 'ad_unit'
+      dfp_service = dfp.service(:InventoryService, API_VERSION)
+      root_ad_unit = get_root_ad_unit
+    else
+      service_sym = (type.classify + 'Service').to_sym
+      dfp_service = dfp.service(service_sym, API_VERSION)
+      #Label_Service gives error when trying to get all labels. 
+      statement = Label.get_statement if type == 'label'
+    end
+
+    type.classify.constantize.delete( type.classify.constantize.nw(session[:nw]) )
+    get_root_ad_unit if type == 'ad_unit'
+
+    method = ( 'get_' + type.pluralize + '_by_statement' ).to_sym
+    result_page = dfp_service.send(method, statement)
+
+    result_page[:results].each do |result|
+      next if type == 'ad_unit' and result[:parent_id].blank?
+      next if not type.classify.constantize.nw(session[:nw]).find_by_dfp_id( result[:id] ).nil? 
+      result[:network_id] = session[:nw]
+
+      cp = type.classify.constantize.params_dfp2bulk( result )
+      dc = type.classify.constantize.new( cp )
+      dc.save( :validate => false ) 
+    end
+
+    total = result_page[:results].size
+
+    if type == 'ad_unit'
+
+      parent_update = AdUnit.nw(session[:nw]).find_all_by_parent_id_bulk( nil )
+
+      while parent_update.count > 1
+
+        parent_update.each do |au|
+          if au.parent_id_dfp == root_ad_unit.dfp_id
+            au.level = 1
+            au.parent_id_bulk = root_ad_unit.id
+          else
+            parent = AdUnit.nw(session[:nw]).find_by_dfp_id(au.parent_id_dfp)
+            if not parent.nil?
+              au.parent_id_bulk = parent.id
+            end
+          end
+          au.save(:validate => false)
+
+        end    
+        parent_update = AdUnit.nw(session[:nw]).find_all_by_parent_id_bulk( nil )
+      end
+      ad_unit_level_update    
+    end
+    redirect_to :controller => @current_controller, :action => 'index'
+      
+  end  
+  
+  def ad_unit_level_update
+    AdUnit.nw(session[:nw]).find_all_by_level(nil).each do |au|
+      au.level = au.get_level
+      au.save( :validate => false )
+    end
+  end
+  
 end
-  
-  
-  
-  # def sync_from_dfp
-  #     begin
-  # 
-  #       # Define initial values.
-  #       result_page = {}
-  #       flash[:error] = ''
-  #       no_update_needed_count = update_count = new_count = error_count = 0
-  #       limit = 9999
-  #       statement = {:query => "LIMIT %d" % limit}
-  #       type = @current_controller.singularize
-  # 
-  #       # Get API instance.
-  #       dfp = get_dfp_instance       
-  #       # Get the Service.
-  #       if type == 'ad_unit'
-  #         dfp_service = dfp.service(:InventoryService, API_VERSION)
-  #       else
-  #         service_type = (type.classify + 'Service').to_sym
-  #         dfp_service = dfp.service(service_type, API_VERSION)
-  #         #Label_Service gives error when trying to get all labels. 
-  #         if type == 'label'
-  #           statement = Label.get_statement
-  #         end
-  #       end
-  # 
-  #       begin 
-  #         method_name = ('dfp_service.get_' + type.pluralize + '_by_statement').to_sym
-  #         result_page = dfp_service.send(method_name, statement)
-  # 
-  #         # HTTP errors.
-  #       rescue AdsCommon::Errors::HttpError => e
-  #         flash[:error] += "HTTP Error: %s" % e
-  #         # API errors.
-  #       rescue DfpApi::Errors::ApiException => e
-  #         e.errors.each_with_index do |error, index|
-  #           flash[:error] += "  |  " + "%s: %s" % [error[:trigger], error[:error_string]]
-  #         end
-  #       end    
-  # 
-  #       redirect_to :controller => @current_controller, :action => 'index' and return if not flash[:error].blank?
-  # 
-  #       parent_updates = []
-  # 
-  #       result_page[:results].each do |result|
-  #         result[:network_id] = session[:nw]
-  #         cp = type.classify.constantize.params_dfp2bulk(result)
-  #         to_be_updated = type.classify.constantize.nw(session[:nw]).find_by_dfp_id( cp[:dfp_id] )
-  #         if to_be_updated
-  #           if type == 'ad_unit' and cp[:level] == 0
-  #             no_update_needed_count += 1
-  #             next
-  #           end
-  #           to_be_updated.attributes = cp 
-  #           if to_be_updated.changed? and to_be_updated.save( :validate => false )
-  #             update_count += 1
-  #           else
-  #             no_update_needed_count += 1
-  #           end
-  #         else
-  #           dc = type.classify.constantize.new(cp)
-  #           dc.save(:validate => false)
-  #           parent_updates << dc
-  #           new_count += 1
-  #         end
-  #       end
-  #       error_count = result_page[:results].size - ( update_count + no_update_needed_count + new_count )
-  #       total = result_page[:results].size
-  #       flash[:info] = (type == 'ad_unit' ? total-1 : total).to_s + ' ' + type.pluralize.capitalize + ' have been retrieved from DFP.'
-  #       flash[:info] += " No updates to local DB were required." if error_count + update_count + new_count == 0
-  # 
-  #       flash[:success] = new_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully CREATED in local DB.' if new_count != 0
-  #       flash[:notice] = update_count.to_s + ' ' + type.pluralize.capitalize + ' have been successfully UPDATED in local DB.' if update_count != 0
-  #       flash[:error] += '<br/>' + error_count.to_s + ' ' + type.pluralize.capitalize + ' have NOT BEEN CREATED/UPDATED in the local DB. <br/><strong>Contact kaya@google.com</strong>.' if error_count != 0
-  # 
-  #       if type == 'ad_unit'
-  #         return parent_updates 
-  #       else
-  #         redirect_to :controller => @current_controller, :action => 'index'     
-  #       end
-  # 
-  #     rescue Exception => e
-  #       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-  #       redirect_to :controller => 'whatelse', :action => 'error'
-  #     end
-  # 
-  #   end
-  #   
-  # def sync_to_dfp 
-  #     begin    
-  # 
-  #       flash[:error] = ''
-  # 
-  #       type = @current_controller.singularize
-  #       dfp = get_dfp_instance
-  # 
-  #       # Get the Service.
-  #       if type == 'ad_unit'
-  #         dfp_service = dfp.service(:InventoryService, API_VERSION)
-  #       else
-  #         service_type = ( type.classify + 'Service' ).to_sym
-  #         dfp_service = dfp.service(service_type, API_VERSION)
-  #       end
-  # 
-  #       # Define initial values.
-  #       limit = 9999
-  #       statement = {:query => "LIMIT %d" % limit}
-  #       to_create = []
-  #       to_update = []
-  #       created = []
-  #       updated = []
-  #       all_locals = type.classify.constantize.nw(session[:nw]).all
-  # 
-  #       all_locals.each do |c|
-  #         if c.dfp_id.blank?
-  #           to_create << c.params_bulk2dfp
-  #         elsif ( c.synced_at || c.created_at ) + 15 < c.updated_at
-  #           to_update << c.params_bulk2dfp
-  #         end
-  #       end
-  # 
-  #       if to_create.blank? and to_update.blank?
-  #         flash[:info] = 'There is no data to be pushed to DFP.'
-  #         redirect_to :controller => @current_controller, :action => 'index' and return
-  #       else
-  #         begin
-  #           create_method_name = ( 'create_' + type.pluralize ).to_sym
-  #           update_method_name = ( 'update_' + type.pluralize ).to_sym
-  #           created = dfp_service.send(create_method_name, to_create) unless to_create.blank?
-  #           updated = dfp_service.send(update_method_name, to_create) unless to_update.blank?
-  #           # HTTP errors.
-  #         rescue AdsCommon::Errors::HttpError => e
-  #           flash[:error] += "HTTP Error: %s" % e
-  #           # API errors.
-  #         rescue DfpApi::Errors::ApiException => e
-  #           e.errors.each_with_index do |error, index|
-  #             flash[:error] += "<br/>" + "%s: %s" % [error[:trigger], error[:error_string]]
-  #           end
-  #         end    
-  #       end
-  # 
-  #       created.each do |cc|
-  #         method_name = ( 'find_by_name_and_' + type + '_type' ).to_sym
-  #         local = type.classify.constantize.nw(session[:nw]).send( method_name, cc[:name], cc[:type] )
-  #         if local
-  #           local.dfp_id = cc[:id]
-  #           local.synced_at = Time.now
-  #           local.save
-  #         end
-  #       end    
-  # 
-  #       flash[:success] = created.size.to_s + ' '+ @current_controller.capitalize + ' have been successfully created in DFP.' if created.size != 0
-  #       flash[:notice] = updated.size.to_s + ' ' + @current_controller.capitalize + ' have been successfully updated in DFP.' if updated.size != 0
-  # 
-  #       redirect_to :controller => @current_controller, :action => 'index' and return
-  # 
-  #     rescue Exception => e
-  #       flash[:error] = 'Ooops... This is not really what we expected. Shoot an email to kaya@google.com with details.'
-  #       redirect_to :controller => 'whatelse', :action => 'error'
-  #     end
-  # 
-  #   end

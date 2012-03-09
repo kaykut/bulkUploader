@@ -23,16 +23,16 @@
 		    <td><%= upload.status %></td>
 		    <td>
 					<% if not upload.errors_file.blank? %>
-		      	<%= link_to 'Errors  |  ', { :controller => 'uploads', 
+		      	<%= link_to 'Errors', { :controller => 'uploads', 
                                     :action => 'download_errors', 
-                                    :id => upload } %>
+                                    :id => upload } %>  |  
 					<% else %>
 						<%='Errors  |  '%>
 					<% end %>
 					<% if not upload.created_file.blank? %>
-		      	<%= link_to 'Created  |  ', { :controller => 'uploads', 
+		      	<%= link_to 'Created', { :controller => 'uploads', 
 	                                   :action => 'download_created', 
-	                                   :id => upload } %>
+	                                   :id => upload } %>  |  
 					<% else %>
 						<%='Created  |  '%>
 					<% end %> 

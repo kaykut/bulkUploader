@@ -4,10 +4,9 @@ class CompaniesController < ApplicationController
   # GET /companies
   # GET /companies.json
   def index
+
     @companies = Company.nw(session[:nw]).all
-    @companies.sort! do |a,b|
-      a.name <=> b.name
-    end
+    Company.sort_all(@companies)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -100,4 +99,13 @@ class CompaniesController < ApplicationController
     end
     
   end
+  
+  def download_all
+    super
+  end
+  
+  def copy_from_dfp
+    super
+  end
+  
 end

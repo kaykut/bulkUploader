@@ -95,6 +95,7 @@ class AdUnit < ActiveRecord::Base
   end
   
   def self.row_to_params( row, nw_id )
+    
     return nil if row.blank?
     params = {}
     parent = AdUnit.nw(nw_id).find_by_level(0)
@@ -176,7 +177,7 @@ class AdUnit < ActiveRecord::Base
       else
         if s[0].capitalize == 'A'
           params[:is_aspect_ratio] = true 
-          separator = ':'
+          separator = 'x'
           s.delete!('aA')
         end
         params[:environment_type] ='BROWSER' 
@@ -288,6 +289,31 @@ class AdUnit < ActiveRecord::Base
     elsif self.name.include?('/')
       errors.add('name', 'name cannot contain "/" (slash character)')
     end
+  end
+  
+  def self.sort_all(ad_units)
+    ad_units.sort! do |a,b|       
+
+      if a.get_parent_of_level(1,'name') != b.get_parent_of_level(1,'name') 
+        a.get_parent_of_level(1,'name') <=> b.get_parent_of_level(1,'name') 
+      else
+        if a.get_parent_of_level(2,'name') != b.get_parent_of_level(2,'name') 
+          a.get_parent_of_level(2,'name') <=> b.get_parent_of_level(2,'name') 
+        else
+          if a.get_parent_of_level(3,'name') != b.get_parent_of_level(3,'name') 
+            a.get_parent_of_level(3,'name') <=> b.get_parent_of_level(3,'name') 
+          else
+            if a.get_parent_of_level(4,'name') != b.get_parent_of_level(4,'name') 
+              a.get_parent_of_level(4,'name') <=> b.get_parent_of_level(4,'name') 
+            else
+              a.get_parent_of_level(5,'name') <=> b.get_parent_of_level(5,'name') 
+            end
+          end
+        end
+      end
+      
+    end
+    
   end
   
   

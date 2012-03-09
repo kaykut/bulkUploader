@@ -9,10 +9,8 @@ class AdUnitsController < ApplicationController
     root_au = get_root_ad_unit
     
     @ad_units.delete(root_au)
-    @ad_units.sort! do |a,b|       
-      a.get_parent_of_level(1,'name') <=> b.get_parent_of_level(1,'name') 
-    end
-    
+    AdUnit.sort_all(@ad_units)       
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @ad_units }
@@ -89,5 +87,13 @@ class AdUnitsController < ApplicationController
       format.json { head :ok }
     end
   end
-
+  
+  def download_all
+    super
+  end
+  
+  def copy_from_dfp
+    super
+  end
+  
 end

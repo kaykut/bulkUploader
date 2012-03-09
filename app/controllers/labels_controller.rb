@@ -3,10 +3,7 @@ class LabelsController < ApplicationController
   # GET /labels.json
   def index
     @labels = Label.nw(session[:nw]).all
-    @labels.sort! do |a,b|
-      a.name <=> b.name
-    end
-    
+    Label.sort_all(@labels)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -84,4 +81,13 @@ class LabelsController < ApplicationController
       format.json { head :ok }
     end
   end
+  
+  def download_all
+    super
+  end
+  
+  def copy_from_dfp
+    super
+  end
+  
 end

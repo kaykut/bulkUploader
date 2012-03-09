@@ -94,7 +94,7 @@ class Company < ActiveRecord::Base
 	end
 	
 	def to_row
-	  row = [self.name, self.company_type, self.address, self.email, self.fax_phone, self.primary_self.phone, self.external_id, self.comment, 
+	  row = [self.name, self.company_type, self.address, self.email, self.fax_phone, self.primary_phone, self.external_id, self.comment, 
 	   self.enable_same_advertiser_competitive_exclusion, self.credit_status]
     row << self.label_list
 	end
@@ -153,6 +153,12 @@ class Company < ActiveRecord::Base
   
   def assign_defaults
     self.credit_status = 'ACTIVE' if self.credit_status.blank?
+  end
+  
+  def self.sort_all(companies)
+    companies.sort! do |a,b|
+      a.name <=> b.name
+    end
   end
   
 end

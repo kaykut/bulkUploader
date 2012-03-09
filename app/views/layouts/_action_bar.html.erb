@@ -4,5 +4,11 @@
 			<li> <%= link_to 'New Upload', { :controller => 'uploads', :action => 'new' }%> </li>
 		<% end %>
 		<li><%= link_to "Delete all #{@current_controller.humanize} from local", { :controller => @current_controller, :action => 'clear_all' }, { :confirm => "All local #{@current_controller.humanize} will be deleted. The data already in the dfp Servers will NOT be affected. Are you sure?" } %></li>
+		<% if ['ad_units', 'companies', 'labels'].include?(@current_controller) %>
+			<li><%= link_to 'Import from DFP to Local', { :controller => @current_controller, :action => 'copy_from_dfp' } %></li>
+		<% end %>
+		<% if @current_controller.singularize.classify.constantize.nw(session[:nw]).all.size > 0 and ['ad_units', 'companies', 'labels'].include?(@current_controller) %>
+			<li> <%= link_to 'Download all local to CSV', { :controller => @current_controller, :action => 'download_all' } %>
+		<% end %>
 	</ul>
 </div>

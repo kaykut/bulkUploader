@@ -37,7 +37,7 @@ class Label < ActiveRecord::Base
 	end
 
   def to_row
-    row = [self.name, self.desciption, self.label_type]
+    row = [self.name, self.description, self.label_type]
   end
 
   def exists?
@@ -66,5 +66,11 @@ class Label < ActiveRecord::Base
     self.name.reverse!.chop!.reverse! while self.name.first == ' '
   end
   
+  def self.sort_all(labels)
+    labels.sort! do |a,b|
+      a.name <=> b.name
+    end
+  end
+
 end
 

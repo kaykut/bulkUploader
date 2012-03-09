@@ -16,6 +16,8 @@ BulkUploader::Application.routes.draw do
   # get 'companies/sync_to_dfp'
   get 'companies/index'
   get 'companies/clear_all'
+  get 'companies/download_all'
+  get 'companies/copy_from_dfp'
   resources :companies do
     get 'show', :on => :member
   end
@@ -26,6 +28,8 @@ BulkUploader::Application.routes.draw do
   # get 'labels/sync_to_dfp'
   get 'labels/index'
   get 'labels/clear_all'
+  get 'labels/download_all'
+  get 'labels/copy_from_dfp'
   resources :labels do
     get 'show', :on => :member
   end
@@ -36,6 +40,8 @@ BulkUploader::Application.routes.draw do
   # get 'ad_units/sync_to_dfp'
   get 'ad_units/index'
   get 'ad_units/clear_all'
+  get 'ad_units/download_all'
+  get 'ad_units/copy_from_dfp'
   resources :ad_units do
     get 'show', :on => :member
   end

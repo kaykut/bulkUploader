@@ -16,7 +16,7 @@ end
 
 l2_array = []
 l1_array.each do |r|
-  (no_level+1).times do |l2|
+  (no_level).times do |l2|
     row = r.dup
     row[1] = au_name + '_l2_' + (l2+1).to_s
     l2_array << row
@@ -25,7 +25,7 @@ end
 
 l3_array = []
 l2_array.each do |r|
-  (no_level+2).times do |l3|
+  (no_level).times do |l3|
     row = r.dup
     row[2] = au_name + '_l3_' + (l3+1).to_s
     l3_array << row
@@ -34,7 +34,7 @@ end
 
 l4_array = []
 l3_array.each do |r|
-  (no_level+3).times do |l4|
+  (no_level).times do |l4|
     row = r.dup
     row[3] = au_name + '_l4_' + (l4+1).to_s
     l4_array << row
@@ -43,7 +43,7 @@ end
 
 l5_array = []
 l4_array.each do |r|
-  (no_level+4).times do |l5|
+  (no_level).times do |l5|
     row = r.dup
     row[4] = au_name + '_l5_' + (l5+1).to_s
     l5_array << row

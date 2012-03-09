@@ -104,6 +104,7 @@ class UploadsController < ApplicationController
       redirect_to :controller => 'uploads', :action => 'index' and return
       @upload.update_attribute(:status, 'Error in import to DFP.')
     else
+      flash[:success] = "Import successful. #{all_created.size.to_s} #{type.classify.pluralize} have been created."
       @upload.update_attribute(:status, 'Imported')
     end
 
@@ -124,7 +125,6 @@ class UploadsController < ApplicationController
   end
 
   def copy_from_dfp(type)
-
     # Define initial values.
     result_page = {}
     statement = {:query => "LIMIT 99999"}
@@ -143,7 +143,10 @@ class UploadsController < ApplicationController
       #Label_Service gives error when trying to get all labels. 
       statement = Label.get_statement if type == 'label'
     end
-
+    
+    type.classify.constantize.delete( type.classify.constantize.nw(session[:nw]) )
+    get_root_ad_unit if type == 'ad_unit'
+    
     method = ( 'get_' + type.pluralize + '_by_statement' ).to_sym
     result_page = dfp_service.send(method, statement)
 
@@ -187,7 +190,6 @@ class UploadsController < ApplicationController
   end
 
   def copy_to_dfp( upload )
-    
     type = upload.datatype.singularize.underscore
     # Define initial values.
     limit = 9999
@@ -215,7 +217,7 @@ class UploadsController < ApplicationController
             to_create_hash << c.params_bulk2dfp
           end
         end
-debugger
+
         next if to_create_object.size == 0
 
         if not error
@@ -327,13 +329,8 @@ debugger
   end
 
 
-  private
   def ad_unit_level_update
-
-    AdUnit.nw(session[:nw]).find_all_by_level(nil).each do |au|
-      au.level = au.get_level
-      au.save( :validate => false )
-    end
+    super
   end
 
 end
