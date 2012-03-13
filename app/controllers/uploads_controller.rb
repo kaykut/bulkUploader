@@ -41,9 +41,6 @@ class UploadsController < ApplicationController
 
     #get Labels from DFP if Companies are being uploaded
     if not session[:local_test]
-      copy_from_dfp('label') if type == 'company' 
-      copy_from_dfp( type )
-
       begin
         copy_from_dfp('label') if type == 'company' 
         copy_from_dfp( type )

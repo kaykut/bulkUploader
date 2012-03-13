@@ -105,7 +105,7 @@ class AdUnit < ActiveRecord::Base
         break
       else
         if !parent.children.blank?      
-          parent = parent.children.find{ |au| au.name == row[i] }
+          parent = parent.children.find{ |au| au.name.casecmp( row[i] ) }
         else
           params[:parent_id_bulk] = nil
           break
