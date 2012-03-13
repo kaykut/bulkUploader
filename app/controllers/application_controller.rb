@@ -50,7 +50,6 @@ class ApplicationController < ActionController::Base
 
   def get_root_ad_unit
     begin
-      
       if session[:local_test]
         effective_root_ad_unit_id = nil
       else

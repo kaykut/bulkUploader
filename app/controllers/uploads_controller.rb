@@ -144,13 +144,21 @@ class UploadsController < ApplicationController
       statement = Label.get_statement if type == 'label'
     end
     
-    type.classify.constantize.delete( type.classify.constantize.nw(session[:nw]) )
+    if type != 'ad_unit'
+      type.classify.constantize.delete( type.classify.constantize.nw(session[:nw]) )
+    else
+      AdUnit.nw(session[:nw]).all.each do |au|
+        AdUnit.delete(au) if au.id != root_ad_unit.id
+      end
+    end
+      
     get_root_ad_unit if type == 'ad_unit'
     
     method = ( 'get_' + type.pluralize + '_by_statement' ).to_sym
     result_page = dfp_service.send(method, statement)
 
     result_page[:results].each do |result|
+      
       next if type == 'ad_unit' and result[:parent_id].blank?
       next if not type.classify.constantize.nw(session[:nw]).find_by_dfp_id( result[:id] ).nil? 
       result[:network_id] = session[:nw]

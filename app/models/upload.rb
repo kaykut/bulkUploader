@@ -132,6 +132,7 @@ class Upload < ActiveRecord::Base
     else
       File.delete( csv_file_out )
       self.imported = true
+      self.status = 'Imported to Local'
       self.save
     end
 
