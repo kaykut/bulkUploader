@@ -119,7 +119,7 @@ class ApplicationController < ActionController::Base
   end
   
   def download_all
-    ad_unit_header = 'Top Level AU Name, 2nd Level AU Name, 3rd Level AU Name, 4th Level AU Name, 5th Level AU Name, Ad Unit Sizes, Target Window, Explicitly Targeted, Target Platform, Description'
+    ad_unit_header = 'Top Level AU Name, 2nd Level AU Name, 3rd Level AU Name, 4th Level AU Name, 5th Level AU Name, Ad Unit ID, Ad Unit Sizes, Target Window, Explicitly Targeted, Target Platform, Description'
     company_header = 'Name,Company Type, Address, Email, Fax Phone, Primary Phone, External ID, Comment, enable_same_advertiser_competitive_exclusion, Credit Status, Labels'
     label_header = 'Name, description, Label Type'
     

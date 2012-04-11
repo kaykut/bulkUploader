@@ -86,6 +86,7 @@ class AdUnit < ActiveRecord::Base
     5.times do |i|
       row << self.get_parent_of_level(i+1, 'name' )
     end
+    row << self.dfp_id
     row << self.ad_unit_sizes_list
     row << self.target_window
     row << self.explicitly_targeted
