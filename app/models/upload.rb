@@ -96,6 +96,7 @@ class Upload < ActiveRecord::Base
           next
         end
         
+        
         row_out = []
 
         params = data_class.constantize.row_to_params( row_in, nw_id )

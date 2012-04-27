@@ -143,7 +143,7 @@ class ApplicationController < ActionController::Base
     end
 
     File.rename(temp_file, temp_path + type.pluralize + '_nw_' + session[:nw].to_s + '.csv')
-    temp_file = temp_path + type + '_nw_' + session[:nw].to_s + '.csv'
+    temp_file = temp_path + type.pluralize + '_nw_' + session[:nw].to_s + '.csv'
     send_file(temp_file, :type => "application/csv")
     File.delete(temp_file)
     

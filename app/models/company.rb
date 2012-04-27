@@ -79,7 +79,7 @@ class Company < ActiveRecord::Base
 		params[:comment] = row[7]
 		params[:enable_same_advertiser_competitive_exclusion] = row[8] || false
 		params[:credit_status] = row[9]
-		params[:network_id]
+		params[:network_id] = nw_id
  
     return params if row[10].blank?
 		params[:labels_attributes] = []    

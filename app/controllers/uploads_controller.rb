@@ -40,6 +40,7 @@ class UploadsController < ApplicationController
     end
 
     #get Labels from DFP if Companies are being uploaded
+
     if not session[:local_test]
       begin
         copy_from_dfp('label') if type == 'company' 
@@ -122,6 +123,7 @@ class UploadsController < ApplicationController
   end
 
   def copy_from_dfp(type)
+    
     # Define initial values.
     result_page = {}
     statement = {:query => "LIMIT 99999"}
@@ -207,12 +209,12 @@ class UploadsController < ApplicationController
     dfp_service = get_service(type)
 
     error = false
+    to_create_hash = []
+    to_create_object = []
 
     if type == 'ad_unit'
 
       5.times do |i|
-        to_create_hash = []
-        to_create_object = []
         created = []
   
         all_locals_level_i = AdUnit.nw(session[:nw]).find_all_by_level(i+1)
@@ -259,6 +261,7 @@ class UploadsController < ApplicationController
       end
 
     else
+
       all_locals = type.classify.constantize.nw(session[:nw]).all
       all_locals.each do |c|
         if c.dfp_id.blank?
