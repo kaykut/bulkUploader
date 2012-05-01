@@ -52,7 +52,8 @@ class UploadsController < ApplicationController
         error_details[:type] = e.errors[0][:api_error_type].to_s
       end
     end
-    
+  
+  
     if not sync_from_dfp_error
       @upload.save_temp(session[:nw])
 
@@ -87,6 +88,7 @@ class UploadsController < ApplicationController
       redirect_to :controller => 'uploads', :action => 'index' and return
       @upload.update_attribute(:status, 'Error in import from DFP.')
     elsif sync_to_dfp_error
+
       flash[:error] = ('The import to local was successful, however, there was an error syncing data TO DFP. Here are the details: <br/>' + 
                       '<ul>'+ 
                         '<li><strong>Trigger</strong>: ' + error_details[:trigger] + '</li>' + 
@@ -275,9 +277,9 @@ class UploadsController < ApplicationController
         created = dfp_service.send(create_method_name, to_create_hash) unless to_create_hash.blank?
       rescue Exception => e
         error = true
-        error_details[:message] = e.errors[0][:reason].to_s
-        error_details[:trigger] = e.errors[0][:trigger].to_s
-        error_details[:type] = e.errors[0][:api_error_type].to_s
+        error_details[:message] = e.errors.blank? ? '' : e.errors[0][:reason].to_s
+        error_details[:trigger] = e.errors.blank? ? '' : e.errors[0][:trigger].to_s
+        error_details[:type] = e.errors.blank? ? '' : e.errors[0][:api_error_type].to_s
       end
 
       if not error

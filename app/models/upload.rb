@@ -57,6 +57,7 @@ class Upload < ActiveRecord::Base
   end
 
   def import(nw_id)
+    
     self.update_attribute(:status, 'Import in progress')
     
 #initialize vars
