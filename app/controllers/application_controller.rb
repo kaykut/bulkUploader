@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_currents
   before_filter :add_network_id_to_params, :except => [:login]
 
-  API_VERSION = 'v201111'
+  API_VERSION = :v201111
 
   def user_session
     @user_session ||= UserSession.new(session)

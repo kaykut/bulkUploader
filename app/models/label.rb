@@ -12,6 +12,7 @@ class Label < ActiveRecord::Base
   scope :nw, lambda { |network_id| where( :network_id => network_id) }
   
   def self.params_dfp2bulk(p)
+    debugger
     params = p.dup
     params[:label_type] = params.delete(:type)
     params[:dfp_id] = params.delete(:id).to_s

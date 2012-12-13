@@ -43,6 +43,7 @@ class UploadsController < ApplicationController
 
     if not session[:local_test]
       begin
+        debugger
         copy_from_dfp('label') if type == 'company' 
         copy_from_dfp( type )
       rescue Exception => e
@@ -274,8 +275,10 @@ class UploadsController < ApplicationController
 
       create_method_name = ( 'create_' + type.pluralize ).to_sym
       begin
+debugger        
         created = dfp_service.send(create_method_name, to_create_hash) unless to_create_hash.blank?
       rescue Exception => e
+debugger
         error = true
         error_details[:message] = e.errors.blank? ? '' : e.errors[0][:reason].to_s
         error_details[:trigger] = e.errors.blank? ? '' : e.errors[0][:trigger].to_s
